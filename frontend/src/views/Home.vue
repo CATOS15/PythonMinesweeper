@@ -1,6 +1,6 @@
 <template>
   <div>
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+    <HelloWorld msg="Test deployment frontend"/>
   </div>
 </template>
 
