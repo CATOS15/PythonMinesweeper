@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Create room</title>
+</head>
+<style type="text/css">
+	html{
+		height:100%;
+	}
+
+	body {
+		margin:0px;
+		width:100%;
+		height:100%;
+		background-color:#404040;
+	}
+
+	.mainbodydiv{
+		height:100%;
+		width:100%;
+		display:flex;
+		align-items:center;
+		justify-content:center;
+	}
+	
+	.loginBox{
+		background-color:grey;
+		width: 300px;
+		min-width: 300px;
+		min-height: 200px;
+		height:200px;
+		box-sizing:border-box;
+		padding:30px;
+
+		align-content:center;
+		margin:auto;
+  		justify-content: center;
+  		align-items: center;
+  		align-self: center;
+	}
+
+	.loginBox > div{
+		width: 100%;
+		height:50%;
+		box-sizing:border-box;
+		display:flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.roomcode{
+		padding:10px 20px 10px 20px;
+		margin:5px;
+		font-size:20px;
+		width:140px;
+		text-align:center;
+	}
+
+	.buttonsBox{
+		height:auto;
+		width:184px;
+		display:flex;
+	}
+
+	.startbuttons{
+		display:flex;
+		text-align:center;
+		margin:0px;
+		padding:10px 0px 10px 0px;
+		font-size:20px;
+		width:50%;
+		display:inline-block;
+		box-sizing:border-box;
+		align-self: flex-end;
+
+	}
+	.leftbutton{
+		margin-right:5px;
+	}
+	.rightbutton{
+		margin-left:5px;
+	}
+
+</style>
+<body>
+	<div class="mainbodydiv">
+		<div class="loginBox">
+			<label for="cars" style="color:white;">Difficulty</label>
+			<select name="cars" id="cars">
+				<option value="volvo">Easy</option>
+				<option value="saab">Medium</option>
+				<option value="mercedes">Hard</option>
+				<option value="audi">Supreme</option>
+			</select>
+			<div>
+				<input type="radio" id="male" name="gender" value="male">
+				<label for="male">Private</label><br>
+				<input type="radio" id="female" name="gender" value="female">
+				<label for="female">Public</label><br>
+			</div>
+			<div class="buttonsBox">
+				<button class="">create</button>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

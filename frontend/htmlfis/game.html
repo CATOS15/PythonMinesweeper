@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Minesweeper</title>
+</head>
+<style type="text/css">
+	body {
+		margin:0px;
+	}
+
+	html{
+		height:100%;
+	}
+
+	body {
+		margin:0px;
+		width:100%;
+		height:100%;
+		background-color:#404040;
+	}
+
+	.mainbodydiv{
+		height:100%;
+		width:100%;
+		display:flex;
+		align-items:center;
+		justify-content:center;
+	}
+
+	.homeicon{
+		  position: absolute;
+		  left: 20px;
+		  top: 20px;
+		  width:20px;
+		  background-color:white; padding:10px; border-radius:50%;
+	}
+
+    /* */
+	.minesweeper{
+
+	}
+
+	.minesweeper_topbar > p{
+		margin:0px;
+	}
+
+	.minesweeper_topbar{
+		background-color:grey;
+		display:flex;
+	}
+
+	.minesweeper_topbar_time {
+		width:100px;
+		margin:0px;
+		text-align:center;
+		padding:10px;
+	}
+	.minesweeper_topbar_flags {
+		width:100px;
+		margin:0px;
+		text-align:center;
+		padding:10px;	
+	}
+	.minesweeper_topbar_idk{
+		width:100%;
+		background-color:#585858;
+	}
+
+	.gamewindow {
+		height:321px;
+	}
+
+	/* */
+	.chat_window{
+		width:200px;
+		display:flex;
+		height:359px;
+		background-color:grey;
+		flex-direction: column;
+		box-sizing:border-box;
+	}
+
+	.chat_messages{
+		height:100%;
+		min-width:100%;
+		background-color:#585858;
+		color:white;
+		padding:5px;
+		line-height: 25px;
+		box-sizing:border-box;
+	}
+
+	.chat_inputfield_div {
+		box-sizing:border-box;
+		width:100%;
+	}
+
+	.chat_inputfield_div_input{
+		height:30px;
+		width:100%;
+		box-sizing:border-box;
+	}
+
+	input:active {
+		outline-offset: 0;
+	}
+
+	input, input:focus {
+		border: none;
+		outline: solid 1px black;
+		box-shadow: none;
+	}
+	input:focus {
+		outline-offset: 0;
+	}
+
+</style>
+<body>
+	<a href="https://www.google.com/">
+         <img class="homeicon" src="https://image.flaticon.com/icons/png/512/69/69524.png">
+    </a>
+	<div class="mainbodydiv">
+      	<div class="minesweeper">
+      		<div class="minesweeper_topbar">
+      			<div class="minesweeper_topbar_flags">flags: 30</div>
+      			<div class="minesweeper_topbar_idk"></div>
+      			<div class="minesweeper_topbar_time">time: 69</div>
+      			<p></p>
+      			<p></p>
+      		</div>
+      		<div class="gamewindow">
+      			<img src="https://minesweeper.online/img/homepage/expert.png">
+      		</div>
+      	</div>
+      	<div class="chat_window">
+      		<div class="chat_messages">
+      				<b>Tobb:</b> I lort til det her spil, 
+      				<b>Oliver:</b> Er det dig eller mig med en highscore på 0.73 sekunder!
+      				<br>
+      				<b>Christian:</b> jeg har travlt
+      				<b>Søren:</b> Tobias har du bogen til parallel faget?
+      		</div>
+      		<div class="chat_inputfield_div">
+      			<input class="chat_inputfield_div_input" type="text" name="message_inputfield" >
+      		</div>
+      	</div>
+	</div>
+</body>
+</html>
