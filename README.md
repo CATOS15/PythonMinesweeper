@@ -11,10 +11,10 @@ Du skal installere følgende
 	npm  
 
 For at køre backend brug følgende  
-Use "cd /backend"  
-Use "py app.py run"  
+Kør "cd /backend"  
+Kør "py app.py run"  
   
 For at køre frontned brug følgende  
-Use "cd /frontend"  
-Use "npm install"  
-Use "npm run serve"
+Kør "cd /frontend"  
+Kør "npm install"  
+Kør "npm run serve"  
