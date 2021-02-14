@@ -12,7 +12,7 @@ Du skal installere følgende
 
 For at køre backend brug følgende  
 Kør "cd /backend"  
-Kør "py app.py run"  
+Kør "py app.py"  
   
 For at køre frontned brug følgende  
 Kør "cd /frontend"  

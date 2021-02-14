@@ -9,6 +9,8 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "socket.io": "^3.1.1",
+    "socket.io-client": "^3.1.1",
     "vue": "^2.6.11",
     "vue-class-component": "^7.2.3",
     "vue-property-decorator": "^9.1.2",
@@ -30,6 +32,7 @@
     "less": "^3.0.4",
     "less-loader": "^5.0.0",
     "typescript": "~3.9.3",
+    "vue-intellisense": "^0.2.0",
     "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {
