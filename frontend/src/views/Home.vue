@@ -7,6 +7,7 @@
 
 <script lang="ts">
 import Test from '../components/Test.vue';
+import SocketResponse from '../models/socketResponse'
 import { io, Socket } from "socket.io-client";
 import { Component, Vue } from 'vue-property-decorator';
 
@@ -16,13 +17,12 @@ import { Component, Vue } from 'vue-property-decorator';
   },
 })
 export default class Home extends Vue {
-  //TODO:: Så det også virker i produktion
-  socket: Socket = io("http://127.0.0.1:5000");
+  socket: Socket = io("ws://" + location.hostname + ":5005");
 
   socketMsg = '';
 
   mounted(){
-    this.socket.on("emitTest", (resp: any) => {
+    this.socket.on("emitTest", (resp: SocketResponse) => {
       this.socketMsg = resp.data;
     });
   }

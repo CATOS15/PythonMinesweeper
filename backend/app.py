@@ -15,7 +15,7 @@ def sockettest(msg):
     {
         'data': msg
     })
-    return 'Beskeden (' + msg + ') blev sendt til alle der er connected til "emitTest" eventet'
+    return 'Beskeden ( ' + msg + ' ) blev sendt til alle der er connected til "emitTest" eventet'
 
 if __name__ == '__main__':
-    socketio.run(app)
+    socketio.run(app, host='0.0.0.0', port=5005)
