@@ -1,0 +1,42 @@
+{
+  "python.linting.enabled": true,
+  "git.ignoreLimitWarning": true,
+  "git.autofetch": true,
+  "git.enableSmartCommit": true,
+  "vetur.experimental.templateInterpolationService": true,
+  "vetur.validation.template": true,
+  "typescript.preferences.quoteStyle": "single",
+  "javascript.preferences.quoteStyle": "single",
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.formatOnSave": true,
+  "vetur.format.defaultFormatter.html": "prettier",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.tslint": true
+  },
+  "vetur.format.defaultFormatterOptions": {
+    "prettier": {
+      "singleQuote": true,
+      "printWidth": 140,
+      "tabWidth": 2,
+      "arrowParens": "avoid",
+      "bracketSpacing": true
+    },
+    "js-beautify-html": {
+      "wrap_attributes": "force-expand-multiline"
+    },
+    "prettyhtml": {
+      "singleQuote": false,
+      "printWidth": 140,
+      "tabWidth": 2,
+      "arrowParens": "avoid",
+      "bracketSpacing": true,
+      "wrapAttributes": false,
+      "sortAttributes": false
+    }
+  }
+}

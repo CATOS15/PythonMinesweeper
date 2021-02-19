@@ -7,9 +7,9 @@
 
 <script lang="ts">
 import Test from '../components/Test.vue';
-import SocketResponse from '../models/socketResponse'
 import { io, Socket } from "socket.io-client";
 import { Component, Vue } from 'vue-property-decorator';
+import SocketResponse from '@/models/socketResponse';
 
 @Component({
   components: {
