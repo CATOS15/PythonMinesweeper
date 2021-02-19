@@ -1,3 +1,3 @@
-export default class SocketResponse{
-    data: string = ""
+export default class SocketResponse {
+  data: string = "";
 }
