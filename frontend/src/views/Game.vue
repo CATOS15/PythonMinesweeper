@@ -1,9 +1,15 @@
 <template>
   <div>
       <div class="game">
-        {{game}}
+        <div class="gamegrid">
+          <div v-for="(x,x_index) in grid" :key="x_index">
+            <div v-for="(y,y_index) in x" :key="y_index">
+              <div class="gameblock"></div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="chat" @mousemove="mousemove($event)">
+      <div class="chat">
         <Chat name="game" />
       </div>
   </div>
@@ -12,6 +18,8 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import Chat from '@/components/Chat.vue'
+import GameBlock from '@/models/gameblock';
+
 
 @Component({
   components: {
@@ -19,12 +27,19 @@ import Chat from '@/components/Chat.vue'
   },
 })
 export default class Game extends Vue {
-    name = "Olli";
-    game = "Her er spilområdet";
-
-    mousemove(event: MouseEvent){
-      console.log("X: " + event.offsetX + " Y: " + event.offsetY);
+  grid: GameBlock[][] = [];  
+    
+  created (){
+    const sizeX = 20;
+    const sizeY = 15;
+    for(let x=0;x<sizeX;x++){
+      this.grid[x] = [];
+      for(let y=0;y<sizeY;y++){
+          this.grid[x][y] = new GameBlock();
+      }
     }
+  }
+
 }
 </script>
 
@@ -34,6 +49,21 @@ export default class Game extends Vue {
   width:calc(100% - 200px);
   height:100%;
   float:left;
+}
+
+.gamegrid{
+  height: 510px;
+  width: 680px;
+  margin: auto;
+}
+
+.gameblock{
+  height: 32px;
+  width: 32px;
+  background: #87cefa;
+  border-radius: 4px;
+  margin : 1px;
+  float: left;
 }
 
 .chat{
