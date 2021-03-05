@@ -38,5 +38,6 @@
       "wrapAttributes": false,
       "sortAttributes": false
     }
-  }
+  },
+  "python.formatting.provider": "black"
 }
