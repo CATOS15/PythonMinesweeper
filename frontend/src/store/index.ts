@@ -1,15 +1,18 @@
 import Vue from 'vue'
-import Vuex from 'vuex'
+import Vuex, { StoreOptions } from 'vuex'
+import { SocketState } from './statetypes'
 
 Vue.use(Vuex)
 
-export default new Vuex.Store({
+const storeOptions: StoreOptions<SocketState> = {
   state: {
-  },
-  mutations: {
   },
   actions: {
   },
-  modules: {
+  mutations: {
+  },
+  getters: {
   }
-})
+}
+
+export default new Vuex.Store<SocketState>(storeOptions);

@@ -2,7 +2,7 @@
   <div>
       <div class="game">
         
-        <div class="h2">Welcome</div>
+        <div class="h2">Welcome {{GLOBAL.currentUser.name}}</div>
         <div class="gamegrid">
           <div v-for="(x,x_index) in grid" :key="x_index">
             <div v-for="(y,y_index) in x" :key="y_index">
@@ -21,6 +21,8 @@
 import { Component, Vue } from 'vue-property-decorator';
 import Chat from '@/components/Chat.vue'
 import GameBlock from '@/models/gameblock';
+import { GLOBAL } from '@/global';
+import router from '@/router';
 
 
 @Component({
@@ -30,14 +32,15 @@ import GameBlock from '@/models/gameblock';
   },
 })
 export default class Game extends Vue {
-
+  GLOBAL = GLOBAL;
+  
   grid: GameBlock[][] = [];  
 
   created (){
-    /*if(!(this.user && this.user.roomname && this.user.name)){
+    if(!(GLOBAL.currentUser && GLOBAL.currentUser.roomname && GLOBAL.currentUser.name)){
       router.replace("/");
       return;
-    }*/
+    }
 
     const sizeX = 20;
     const sizeY = 15;
