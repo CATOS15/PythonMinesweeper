@@ -1,6 +1,8 @@
 <template>
   <div>
       <div class="game">
+        
+        <div class="h2">Welcome {{$globaldata.user}}</div>
         <div class="gamegrid">
           <div v-for="(x,x_index) in grid" :key="x_index">
             <div v-for="(y,y_index) in x" :key="y_index">
@@ -10,7 +12,7 @@
         </div>
       </div>
       <div class="chat">
-        <Chat name="game" />
+        <Chat />
       </div>
   </div>
 </template>
@@ -24,12 +26,19 @@ import GameBlock from '@/models/gameblock';
 @Component({
   components: {
     Chat
+    
   },
 })
 export default class Game extends Vue {
+
   grid: GameBlock[][] = [];  
-    
+
   created (){
+    /*if(!(this.user && this.user.roomname && this.user.name)){
+      router.replace("/");
+      return;
+    }*/
+
     const sizeX = 20;
     const sizeY = 15;
     for(let x=0;x<sizeX;x++){

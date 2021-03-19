@@ -1,4 +1,5 @@
 import Vue, { VNode } from 'vue'
+import  GlobalData  from "/models/globalData";
 
 declare global {
   namespace JSX {
@@ -10,4 +11,11 @@ declare global {
       [elem: string]: any;
     }
   }
+
+  
+  interface Vue {
+      $globaldata: GlobalData;
+  }
 }
+
+

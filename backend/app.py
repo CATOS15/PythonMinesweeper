@@ -26,6 +26,17 @@ rooms: {
 """
 rooms = {}
 
+class HTTPResponse:
+    def __init__(self,msg,success):
+        self.msg = msg
+        self.success = success
+
+    def toJSON (self):
+        return json.dumps(self.__dict__)
+
+
+
+
 @app.route("/")
 def default():
     return ""
@@ -43,25 +54,32 @@ def sendmessage(to, msg):
 @socketio.on("joinroom")
 def joinroom(jsondata):
     data = json.loads(jsondata)
+    if(not data["name"] or not data["roomname"]):
+        return  HTTPResponse('Udfyld venligst navn og rum',False).toJSON()
+
     removefromroom(request.sid)
     if(data["roomname"] in rooms):
         rooms[data["roomname"]][request.sid] = data["name"]
         join_room(data["roomname"])
-        return "Tilsluttet " + data["roomname"] + " med disse brugere " + str(rooms[data["roomname"]])
+        return HTTPResponse("Tilsluttet " + data["roomname"] + " med disse brugere " + str(rooms[data["roomname"]]),True).toJSON();
     else:
-        return "Rum findes ikke!"
+        return HTTPResponse("Rum findes ikke!",False).toJSON();
 
 @socketio.on("createroom")
 def createroom(jsondata):
     data = json.loads(jsondata)
+    if(not data["name"] or not data["roomname"]):
+        return  HTTPResponse('Udfyld venligst navn og rum',False).toJSON()
+
     removefromroom(request.sid)
+    
     if(data["roomname"] in rooms):
-        return "Rummet findes allerede"
+        return HTTPResponse('Rummet findes ikke',False).toJSON()
     else:
         rooms[data["roomname"]] = {}
         rooms[data["roomname"]][request.sid] = data["name"]
         join_room(data["roomname"])
-        return "Rummet blev oprettet"
+        return HTTPResponse('Rummet blev oprettet',True).toJSON()
 
 
 @socketio.on("disconnect")

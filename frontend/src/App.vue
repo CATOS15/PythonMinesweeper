@@ -2,10 +2,9 @@
   <div class="app">
     <div class="routerLinks">
       <router-link to="/">Hjem</router-link> 
-      <router-link to="/game">Game</router-link>
     </div>
     <div class="container">
-      <router-view />
+      <router-view  />
     </div>
   </div>
 </template>
@@ -17,6 +16,9 @@ import { Component, Vue } from 'vue-property-decorator';
   components: {
   },
 })
+
+
+
 export default class App extends Vue {
 }
 </script>
