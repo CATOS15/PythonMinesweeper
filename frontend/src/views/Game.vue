@@ -2,7 +2,7 @@
   <div>
       <div class="game">
         
-        <div class="h2">Welcome {{$globaldata.user}}</div>
+        <div class="h2">Welcome</div>
         <div class="gamegrid">
           <div v-for="(x,x_index) in grid" :key="x_index">
             <div v-for="(y,y_index) in x" :key="y_index">

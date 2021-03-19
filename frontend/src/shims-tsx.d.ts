@@ -11,11 +11,4 @@ declare global {
       [elem: string]: any;
     }
   }
-
-  
-  interface Vue {
-      $globaldata: GlobalData;
-  }
 }
-
-
