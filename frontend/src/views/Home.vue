@@ -24,9 +24,19 @@ import { GLOBAL } from '@/global'
 })
 export default class Home extends Vue {
   GLOBAL = GLOBAL;
-
   socketestablishing = false;
 
+  //VUE Event
+  mounted(){
+    this.socketestablishing = true;
+    GLOBAL.currentSocket = io('ws://' + location.hostname + ':5005');
+    GLOBAL.currentSocket.on('connect', () => {
+      if(!GLOBAL.currentSocket) return;
+      this.socketestablishing = false;
+    });
+  }
+
+  //Custom 'socketcreate' bruges til at oprette et rum
   socketcreate(user: User){
     if(!GLOBAL.currentSocket) return;
 
@@ -39,6 +49,7 @@ export default class Home extends Vue {
     });
   }
 
+  //Custom 'socketjoin' bruges til at tilslutte til et rum
   socketjoin(user: User){
     if(!GLOBAL.currentSocket) return;
 
@@ -48,15 +59,6 @@ export default class Home extends Vue {
       if(response.success){
         router.push('game')
       }
-    });
-  }
-
-  mounted(){
-    this.socketestablishing = true;
-    GLOBAL.currentSocket = io('ws://' + location.hostname + ':5005');
-    GLOBAL.currentSocket.on('connect', () => {
-      if(!GLOBAL.currentSocket) return;
-      this.socketestablishing = false;
     });
   }
 }

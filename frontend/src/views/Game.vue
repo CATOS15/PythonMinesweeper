@@ -36,12 +36,12 @@ export default class Game extends Vue {
   
   grid: GameBlock[][] = [];  
 
+  //VUE Event
   created (){
     if(!(GLOBAL.currentUser && GLOBAL.currentUser.roomname && GLOBAL.currentUser.name)){
       router.replace("/");
       return;
     }
-
     const sizeX = 20;
     const sizeY = 15;
     for(let x=0;x<sizeX;x++){
