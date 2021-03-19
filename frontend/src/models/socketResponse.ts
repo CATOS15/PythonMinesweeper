@@ -1,3 +1,4 @@
 export default class SocketResponse {
-  data = "";
+    msg = '';
+    success = false;
 }
