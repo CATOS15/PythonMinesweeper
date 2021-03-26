@@ -1,10 +1,11 @@
 <template>
   <div>
       <div>
-        <input v-model="currentUser.name" type="text" :disabled="socketLoading"/>
-        <input v-model="currentUser.roomname" type="text" placeholder="ex. 53436" :disabled="socketLoading"/>
-        <button @click="socketcreate()" :disabled="socketLoading" >opret</button>
-        <button @click="socketjoin()" :disabled="socketLoading" >join</button>
+        <input v-model="currentUser.name" type="text" :disabled="connectSocketLoading"/>
+        <input v-model="currentUser.roomname" type="text" placeholder="ex. 53436" :disabled="connectSocketLoading"/>
+        <button @click="socketcreate()" :disabled="connectSocketLoading" >opret</button>
+        <button @click="socketjoin()" :disabled="connectSocketLoading" >join</button>
+        {{errorMsg}}
       </div>
   </div>
 </template>
@@ -32,16 +33,17 @@ export default class Home extends Vue {
   joinRoom!: (user: User) => Promise<SocketResponse>;
   
   currentUser: User = new User();
-  socketLoading = false;
+  connectSocketLoading = false;
+  errorMsg = '';
 
   mounted(){
-    this.socketLoading = true;
+    this.connectSocketLoading = true;
     this.connectSocket().then((resp: SocketResponse) => {
       console.log(resp.msg);
     }).catch((resp: SocketResponse) => {
       console.error(resp.msg);
-    }).finally(() =>{
-      this.socketLoading = false;
+    }).finally(() => {
+      this.connectSocketLoading = false;
     });
   }
 
@@ -49,6 +51,8 @@ export default class Home extends Vue {
     this.createRoom(this.currentUser).then((resp: SocketResponse) => {
       if(resp.success){
         router.push('game');
+      }else{
+        this.errorMsg = resp.msg;
       }
     });
   }
@@ -57,6 +61,8 @@ export default class Home extends Vue {
     this.joinRoom(this.currentUser).then((resp: SocketResponse) => {
       if(resp.success){
         router.push('game');
+      }else{
+        this.errorMsg = resp.msg;
       }
     });
   }

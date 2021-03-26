@@ -61,9 +61,9 @@ def joinroom(jsondata):
     if(data["roomname"] in rooms):
         rooms[data["roomname"]][request.sid] = data["name"]
         join_room(data["roomname"])
-        return HTTPResponse("Tilsluttet " + data["roomname"] + " med disse brugere " + str(rooms[data["roomname"]]),True).toJSON();
+        return HTTPResponse("Tilsluttet " + data["roomname"] + " med disse brugere " + str(rooms[data["roomname"]]),True).toJSON()
     else:
-        return HTTPResponse("Rum findes ikke!",False).toJSON();
+        return HTTPResponse("Rum findes ikke!",False).toJSON()
 
 @socketio.on("createroom")
 def createroom(jsondata):
