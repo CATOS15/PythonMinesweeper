@@ -35,7 +35,9 @@ const storeOptions: StoreOptions<SocketState> = {
       return new Promise((resolve) => {
         socket.emit("createroom", JSON.stringify(user), (resp: string) => {
           const socketResponse = JSON.parse(resp) as SocketResponse;
-          this.commit("SET_CURRENT_USER", user);
+          if(socketResponse.success){
+            this.commit("SET_CURRENT_USER", user);
+          }
           resolve(socketResponse);
         });
       });
@@ -44,7 +46,9 @@ const storeOptions: StoreOptions<SocketState> = {
       return new Promise((resolve) => {
         socket.emit("joinroom", JSON.stringify(user), (resp: string) => {
           const socketResponse = JSON.parse(resp) as SocketResponse;
-          this.commit("SET_CURRENT_USER", user);
+          if(socketResponse.success){
+            this.commit("SET_CURRENT_USER", user);
+          }
           resolve(socketResponse);
         });
       });
