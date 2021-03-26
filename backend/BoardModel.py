@@ -1,5 +1,5 @@
 from enum import Enum
-from random import Random
+import Random
 import math
 
 class GameBoards:
@@ -22,9 +22,11 @@ class GameBoards:
                 self.shown[i][j] = FieldValue.HIDDEN
                 self.hidden[i][j] = FieldValue.HIDDEN
     
-        return GameBoards(self.shown,self.hidden,self.width,self.height)
+        return GameBoards(self.shown,self.hidden,self.width,self.height, 10, False)
 
     def initGameBoard(self,x,y):
+
+
         self.initMines(x,y)
 
 
@@ -36,19 +38,17 @@ class GameBoards:
         mines_placed = 0
 
         while mines_placed < self.numberOfMines:
-            x_mine = Random(self.width)
-            y_mine = Random(self.heigth)
+            x_mine = Random.Random(x)
+            y_mine = Random.Random(y)
             
-            if x == x_mine and y == y_mine or self[x_mine][y_mine] == FieldValue.MINE or self[x_mine][y_mine] == FieldValue.BLANK:
+            if x == x_mine and y == y_mine or self.hidden[x_mine][y_mine] == FieldValue.MINE or self.hidden[x_mine][y_mine] == FieldValue.BLANK:
                 continue
 
             self.hidden[x_mine][y_mine] = FieldValue.MINE
             mines_placed += 1
 
     def initFields(self):
-          for i in range(width):
-            for j in range(height):
-                var = "kayt"
+        var = "kayt"
 
 
     def initStartArea(self,x,y):
@@ -58,15 +58,34 @@ class GameBoards:
         start_field = Random.randint(min, max)
 
         ## Set initalitial starting
-        current_x = self.x
-        current_y = self.y
+        current_x = x
+        current_y = y
 
         placed_start_fields = 0
+        
+        startingPoint = []
 
+        while len(startingPoint) < start_field:
+            if len(startingPoint) == 0:
+               var = "kayt"
         ## lav et recursivt kald det tjekker nærliggende blanke felter
         ## Vi ønsker at lave et starts mønster, der sikre et starts område af en vis størrelse
         ## 
-  
+    
+    def recursiveStart(self, x,y,current_mine_nr):
+        if self.numberOfMines < current_mine_nr:
+            return False
+        if self.hidden[x][y] is None:
+            return False
+        if self.hidden[x][y] == FieldValue.HIDDEN:
+            self.hidden[x][y] = FieldValue.BLANK
+            newX = x + Random.randint(0,1)
+            newY = y + Random.randint(0,1)
+
+            if self.hidden[newX][newY] == FieldValue.HIDDEN:
+                self.hidden[newX][newY] =FieldValue.BLANK
+        
+        #recursiveStart(newX,newY,current_mine_nr)
 
         
                 

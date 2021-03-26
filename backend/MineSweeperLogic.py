@@ -6,9 +6,8 @@ from BoardModel import *
     
 
 
-def fieldClicked(gameboard):
-    if gameboard.newGame:
-        popluateGameBoard(gameboard)
+#def fieldClicked(gameboard):
+    
 
     
 
