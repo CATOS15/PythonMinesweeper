@@ -2,7 +2,7 @@
   <div>
       <div class="game">
         
-        <div class="h2">Welcome {{currentUser.name}} i rummet {{currentUser.roomname}}</div>
+        <div class="h2">Welcome {{currentUser.name}} i rummet {{currentUser.room.roomname}}</div>
         <div class="gamegrid">
           <div v-for="(x,x_index) in grid" :key="x_index">
             <div v-for="(y,y_index) in x" :key="y_index">
@@ -39,15 +39,14 @@ export default class Game extends Vue {
 
   //VUE Event
   created (){
-    if(!(this.currentUser && this.currentUser.roomname && this.currentUser.name)){
-      router.replace("/");
-      return;
+    if(!(this.currentUser && this.currentUser.room && this.currentUser.name && this.currentUser.room.roomname && this.currentUser.room.difficulty && this.currentUser.room.width && this.currentUser.room.height)){
+        router.replace("/");
+        return;
     }
-    const sizeX = 20;
-    const sizeY = 15;
-    for(let x=0;x<sizeX;x++){
+    
+    for(let x=0;x<this.currentUser.room.width;x++){
       this.grid[x] = [];
-      for(let y=0;y<sizeY;y++){
+      for(let y=0;y<this.currentUser.room.height;y++){
           this.grid[x][y] = new GameBlock();
       }
     }

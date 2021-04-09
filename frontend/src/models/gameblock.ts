@@ -1,3 +1,5 @@
+import { BlockState } from "./enums";
+
 export default class GameBlock {
-    clicked = false;
+    BlockState: BlockState = BlockState.BLOCK;
 }
