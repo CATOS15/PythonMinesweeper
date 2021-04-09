@@ -26,7 +26,8 @@
       "member-ordering": false,
       "triple-equals": false,
       "prefer-object-spread": false,
-      "no-duplicate-imports": false
+      "no-duplicate-imports": false,
+      "no-debugger": false
     }
   }
   
