@@ -57,8 +57,8 @@ const storeOptions: StoreOptions<SocketState> = {
   mutations: {
     SET_CURRENT_USER(state, user: User){
       //TODO: Slet når backend returnerer højde og bredde
-      user.room.width = 15;
-      user.room.height = 20;
+      user.room.width = 20;
+      user.room.height = 15;
       state.currentUser = user;
     }
   },

@@ -1,11 +1,10 @@
 <template>
   <div>
       <div class="game">
-        
-        <div class="h2">Welcome {{currentUser.name}} i rummet {{currentUser.room.roomname}}</div>
+        <div class="h2 text-center">Welcome {{currentUser.name}} i rummet {{currentUser.room.roomname}}</div>
         <div class="gamegrid">
-          <div v-for="(x,x_index) in grid" :key="x_index">
-            <div v-for="(y,y_index) in x" :key="y_index">
+          <div v-for="(y,y_index) in grid" :key="y_index" class="gamerow">
+            <div v-for="(x,x_index) in y" :key="x_index">
               <div class="gameblock"></div>
             </div>
           </div>
@@ -42,12 +41,23 @@ export default class Game extends Vue {
     if(!(this.currentUser && this.currentUser.room && this.currentUser.name && this.currentUser.room.roomname && this.currentUser.room.difficulty && this.currentUser.room.width && this.currentUser.room.height)){
         router.replace("/");
         return;
-    }
+    } 
     
-    for(let x=0;x<this.currentUser.room.width;x++){
-      this.grid[x] = [];
-      for(let y=0;y<this.currentUser.room.height;y++){
-          this.grid[x][y] = new GameBlock();
+    /*
+    [
+    [2,2,2,2,2,2]
+    [2,2,2,2,2,2]
+    [2,2,2,2,2,2]
+    [2,2,2,2,2,2]
+    [2,2,2,2,2,2]
+    ]
+
+    */
+
+    for(let y=0;y<this.currentUser.room.height;y++){
+      this.grid[y] = [];
+      for(let x=0;x<this.currentUser.room.width;x++){
+          this.grid[y][x] = new GameBlock();
       }
     }
   }
@@ -57,16 +67,27 @@ export default class Game extends Vue {
 
 <style scoped>
 
+.container > div{
+  display: flex;
+  height: 100%;
+  align-items: center;
+}
+
 .game{
-  width:calc(100% - 200px);
-  height:100%;
-  float:left;
+  height:700px;
 }
 
 .gamegrid{
-  height: 510px;
-  width: 680px;
-  margin: auto;
+  width:720px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.gamerow{
+  display: flex;
+  flex-wrap: wrap;
+  width:100%;
+  justify-content: center;
 }
 
 .gameblock{
@@ -79,8 +100,9 @@ export default class Game extends Vue {
 }
 
 .chat{
-  width:200px;
-  height:100%;
-  float:left;
+  height:700px;
+  min-width: 400px;
+  width:400px;
+  background: white;
 }
 </style>
