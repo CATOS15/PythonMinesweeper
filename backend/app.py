@@ -81,6 +81,9 @@ def createroom(jsondata):
         join_room(data["room"]["roomname"])
         return HTTPResponse('Rummet blev oprettet',True).toJSON()
 
+@socketio.on("leaveroom")
+def leaveroom():
+    removefromroom(request.sid)
 
 @socketio.on("disconnect")
 def ondisconnect():

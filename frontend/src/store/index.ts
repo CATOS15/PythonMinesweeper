@@ -52,6 +52,14 @@ const storeOptions: StoreOptions<SocketState> = {
           resolve(socketResponse);
         });
       });
+    },
+    LEAVE_ROOM(state){
+      return new Promise((resolve) => {
+        socket.emit("leaveroom", () => {
+          this.commit("SET_CURRENT_USER", new User());
+          resolve(null);
+        });
+      });
     }
   },
   mutations: {

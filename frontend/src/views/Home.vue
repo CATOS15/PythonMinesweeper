@@ -1,6 +1,6 @@
 <template>
   <div class="content">
-    <div class="logo">
+    <div>
       <img src="../../src/assets/bomb_title.png" />
     </div>
     <div class="fieldset">

@@ -3,7 +3,7 @@
     <!-- <div class="routerLinks">
       <router-link to="/">Hjem</router-link> 
     </div> -->
-    <div class="container">
+    <div class="gamecontainer">
       <router-view  />
     </div>
   </div>
@@ -44,6 +44,7 @@ html, body, .app{
   background-repeat: no-repeat;
   background-position: center center;
 }
+
 input{
   border-radius: 30px;
   padding: 10px 18px;
@@ -76,8 +77,9 @@ input:focus, button:focus{
 .routerLinks > a{
   margin-left:5px;
 }
-.container{
-  height: 100%;
+
+.gamecontainer{
+  height:100%;
 }
 
 .backgroundYellow{
