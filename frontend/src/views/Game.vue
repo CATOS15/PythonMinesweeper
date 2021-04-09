@@ -62,18 +62,6 @@ export default class Game extends Vue {
         router.replace("/");
         return;
     } 
-    
-    /*
-    [
-    [2,2,2,2,2,2]
-    [2,2,2,2,2,2]
-    [2,2,2,2,2,2]
-    [2,2,2,2,2,2]
-    [2,2,2,2,2,2]
-    ]
-
-    */
-
     for(let y=0;y<this.currentUser.room.height;y++){
       this.grid[y] = [];
       for(let x=0;x<this.currentUser.room.width;x++){
@@ -160,7 +148,6 @@ export default class Game extends Vue {
 .chat{
   height:700px;
   width:340px;
-  background: white;
 }
 
 /*

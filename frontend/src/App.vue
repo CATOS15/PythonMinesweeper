@@ -1,8 +1,5 @@
 <template>
   <div class="app">
-    <!-- <div class="routerLinks">
-      <router-link to="/">Hjem</router-link> 
-    </div> -->
     <div class="gamecontainer">
       <router-view  />
     </div>
@@ -55,6 +52,7 @@ input{
   background: #bababa;
   border: none;
 }
+
 button{
   border-radius: 20px !important;
   padding: 10px 14px;

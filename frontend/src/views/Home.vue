@@ -5,7 +5,7 @@
     </div>
     <div class="fieldset">
       <div>
-        <input v-model="currentUser.name" type="text" placeholder="Navn" />
+        <input v-model="currentUser.name" type="text" placeholder="Navn"/>
       </div>
       <div v-if="state === HomeStateEnum.CREATE">
         <div class="buttons mt-2">
