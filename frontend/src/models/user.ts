@@ -1,4 +1,7 @@
+import { Room } from "./room";
+
 export default class User {
-  roomname = "";
   name = "";
+
+  room: Room = new Room();
 }

@@ -15,7 +15,7 @@
         </div>
       </div>
       <div v-if="state === HomeStateEnum.JOIN" class="mt-1">
-        <input class="mt-2" v-model="currentUser.roomname" type="text" placeholder="Rum nummer" />
+        <input class="mt-2" v-model="currentUser.room.roomname" type="text" placeholder="Rum nummer" />
       </div>
 
 
@@ -83,7 +83,7 @@ export default class Home extends Vue {
     });
 
     if(this.$route.query.roomname){
-      this.currentUser.roomname = this.$route.query.roomname.toString();
+      this.currentUser.room.roomname = this.$route.query.roomname.toString();
     }
   }
 
@@ -97,10 +97,10 @@ export default class Home extends Vue {
   }
 
   navigate(toState: HomeStateEnum){
-    if(toState === HomeStateEnum.JOIN && this.currentUser.roomname){
+    if(toState === HomeStateEnum.JOIN && this.currentUser.room.roomname){
       this.socketjoin();
     }else{
-      this.currentUser.roomname = "";
+      this.currentUser.room.roomname = "";
       this.setState(toState);
     }
   }
@@ -110,7 +110,7 @@ export default class Home extends Vue {
       this.msg = "Navnet skal være 3 karakterer eller længere";
       return false;
     }
-    if(this.state === HomeStateEnum.JOIN && this.currentUser.roomname.length !== 4){
+    if(this.state === HomeStateEnum.JOIN && this.currentUser.room.roomname.length !== 4){
       this.msg = "Rum nummeret skal være 4 karakterer langt";
       return false;
     }
@@ -119,7 +119,7 @@ export default class Home extends Vue {
 
   socketcreate(){
     //TEMP INDTIL BACKEND GENERER RUM ID'ER
-    this.currentUser.roomname = (Math.floor(Math.random() * 8999) + 1000).toString();
+    this.currentUser.room.roomname = (Math.floor(Math.random() * 8999) + 1000).toString();
 
     if(!this.validate()) {
       return;

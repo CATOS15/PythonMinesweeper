@@ -54,31 +54,31 @@ def sendmessage(to, msg):
 @socketio.on("joinroom")
 def joinroom(jsondata):
     data = json.loads(jsondata)
-    if(not data["name"] or not data["roomname"]):
+    if(not data["name"] or not data["room"]["roomname"]):
         return  HTTPResponse('Udfyld venligst navn og rum',False).toJSON()
 
     removefromroom(request.sid)
-    if(data["roomname"] in rooms):
-        rooms[data["roomname"]][request.sid] = data["name"]
-        join_room(data["roomname"])
-        return HTTPResponse("Tilsluttet " + data["roomname"] + " med disse brugere " + str(rooms[data["roomname"]]),True).toJSON()
+    if(data["room"]["roomname"] in rooms):
+        rooms[data["room"]["roomname"]][request.sid] = data["name"]
+        join_room(data["room"]["roomname"])
+        return HTTPResponse("Tilsluttet " + data["room"]["roomname"] + " med disse brugere " + str(rooms[data["room"]["roomname"]]),True).toJSON()
     else:
         return HTTPResponse("Rum findes ikke!",False).toJSON()
 
 @socketio.on("createroom")
 def createroom(jsondata):
     data = json.loads(jsondata)
-    if(not data["name"] or not data["roomname"]):
+    if(not data["name"] or not data["room"]["roomname"]):
         return  HTTPResponse('Udfyld venligst navn og rum',False).toJSON()
 
     removefromroom(request.sid)
     
-    if(data["roomname"] in rooms):
+    if(data["room"]["roomname"] in rooms):
         return HTTPResponse('Rummet findes ikke',False).toJSON()
     else:
-        rooms[data["roomname"]] = {}
-        rooms[data["roomname"]][request.sid] = data["name"]
-        join_room(data["roomname"])
+        rooms[data["room"]["roomname"]] = {}
+        rooms[data["room"]["roomname"]][request.sid] = data["name"]
+        join_room(data["room"]["roomname"])
         return HTTPResponse('Rummet blev oprettet',True).toJSON()
 
 
