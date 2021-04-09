@@ -15,10 +15,10 @@ class GameBoards:
         self.shown =  [[0 for x in range(self.width)] for y in range(self.height)] 
         self.hidden =  [[0 for x in range(self.width)] for y in range(self.height)] 
 
-        for i in range(self.width):
-            for j in range(self.height):
-                self.shown[i][j] = FieldValue.HIDDEN
-                self.hidden[i][j] = FieldValue.HIDDEN
+        for x in range(self.width):
+            for y in range(self.height):
+                self.shown[x][y] = FieldValue.HIDDEN
+                self.hidden[x][y] = FieldValue.HIDDEN
 
 
     def initGameBoard(self):
@@ -39,38 +39,31 @@ class GameBoards:
             x_mine = randrange(0,width)
             y_mine = randrange(0,height)
             
-            if width == x_mine and height == y_mine or self.hidden[x_mine][y_mine] == FieldValue.MINE.value or self.hidden[x_mine][y_mine] == FieldValue.BLANK:
+            if width == x_mine and height == y_mine or self.hidden[x_mine][y_mine] == FieldValue.MINE or self.hidden[x_mine][y_mine] == FieldValue.BLANK:
                 continue
 
-            self.hidden[x_mine][y_mine] = FieldValue.MINE.value
+            self.hidden[x_mine][y_mine] = FieldValue.MINE
             mines_placed += 1
 
     def initFields(self):
-        for i in range(self.width):
-            for j in range(self.height):
-                if self.hidden[i][j] != None and self.hidden[i][j] != FieldValue.MINE.value and self.hidden[i][j] != FieldValue.BLANK:
-                    pos_value = self.neighbors(i,j)
-                    self.hidden[i][j] = pos_value
+        for x in range(self.width):
+            for y in range(self.height):
+                if self.hidden[x][y] != None and self.hidden[x][y] != FieldValue.MINE and self.hidden[x][y] != FieldValue.BLANK:
+                    pos_value = self.neighbors(x,y)
+                    self.hidden[x][y] = FieldValue(pos_value)
 
     def neighbors(self,start_x,start_y):
         nearbyMine = 0
 
-        for i in range(start_x-1,start_x+1):
-            for j in range(start_y-1,start_y+1):
-                if not (i < 0 and j < 0) and not(i > self.width and j > self.height):
-                    if i != start_x and j != start_y:
-                        if self.hidden[i][j] == FieldValue.MINE.value:
-                            nearbyMine +=1
-
-        # for i in (start_x-1 for start_x in range(start_x+1)):
-        #     for j in (start_y-1 for start_y in range(start_y+1)):
-        #         if self.hidden[i][j] != None :
-        #             if i != start_x and j != start_y:
-        #                 if self.hidden[i][j] == FieldValue.MINE.value:
-        #                     nearbyMine = nearbyMine + 1 
+        for x in range(start_x-1,start_x+2):
+            for y in range(start_y-1,start_y+2):
+                if (x >= 0 and y >= 0) and (x < self.width and y < self.height):
+                    if self.hidden[x][y] == FieldValue.MINE:
+                        nearbyMine +=1
         return nearbyMine
 
 
+  
 
 
 

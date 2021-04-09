@@ -14,7 +14,7 @@ from BoardModel import *
 
 
 
-def initGame(numberOfMines,height,width):
+def initGame(numberOfMines,width,height):
     ## Add information to gameboard
     print( "test ")
     gameboard = GameBoards(None,None,width,height,numberOfMines,True)
@@ -36,9 +36,9 @@ def initGame(numberOfMines,height,width):
 def printGameboard(gameboard):
     for r in gameboard.hidden:
         for c in r:
-            print(c,end = " ")
+            print(str(c.value),end = " ")
         print()
             
 
-initGame(10,5,5)
+initGame(23,5,5)
 
