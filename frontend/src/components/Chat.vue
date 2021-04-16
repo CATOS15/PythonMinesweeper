@@ -1,12 +1,12 @@
 <template>
   <div class="chatcontent">
     <div class="playerscontainer gradientbackground" >
-      <div v-for="(username,username_index) in tempusernames" :key="username_index">
+      <div v-for="(username,username_index) in usernames" :key="username_index">
         <div class="playercircle unselectable" :title="username" :class="{'active':currentUser.name.toLowerCase() == username.toLowerCase()}">{{username[0].toUpperCase()}}</div>
       </div>
     </div>
     <div class="messagescontainer gradientbackground" dir="ltr">
-      <div v-for="(chatmessage,chatmessage_index) in tempchatmessages" :key="chatmessage_index">
+      <div v-for="(chatmessage,chatmessage_index) in chatmessages" :key="chatmessage_index">
         <p>
           <b>{{chatmessage.username}}: </b>
           <span>{{chatmessage.message}}</span>
@@ -15,8 +15,8 @@
     </div>
     <div class="inputcontainer">
       <div class="chatinput gradientbackground">
-        <input type="text" v-model="message" @keyup.enter="addmessage(message)">
-        <button @click="addmessage(message)">Go</button>
+        <input type="text" v-model="message" @keyup.enter="sendMessage(message)">
+        <button @click="sendMessage(message)">Go</button>
       </div>
     </div>
   </div>
@@ -24,36 +24,56 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { Getter } from 'vuex-class';
+import { Getter, Action } from 'vuex-class';
 import User from '@/models/user';
 import ChatMessage from '@/models/chatMessage';
+import SocketResponse from '@/models/socketResponse';
 
 @Component
 export default class Chat extends Vue {
   @Getter('GET_CURRENT_USER')
   currentUser!: User;
 
-  message:string = '';
+  @Action("ROOM_REFRESH_USERSCONNECTED")
+  room_refreshUsersConnected!: (user: User) => Promise<SocketResponse>;
 
-  tempusernames:String[] = ['peter', 'ole', 'jens', 'morgens'];
+  @Action("ROOM_LISTEN_USERSCONNECTED")
+  room_listenUserConnected!: (callback: (usernames: string[]) => void) => Promise<null>;
 
-  tempchatmessages:ChatMessage[] = [{username:'peter',message:'bananskrald', time:new Date()},
-                                    {username:'ole',message:'abekat', time:new Date()},
-                                    {username:'jens',message:'AfeslhjA352 lkjasdf', time:new Date()},
-                                    {username:'peter',message:'jeg hader jens', time:new Date()}]
+  @Action("CHAT_SENDMESSAGE")
+  chat_sendMessage!: (chatMessage: ChatMessage) => Promise<string>;
 
-  addmessage(message: string){
-    if(message.length === 0) {
+  @Action("CHAT_LISTEN_MESSAGE")
+  chat_listenMessage!: (callback: (chatMessage: ChatMessage) => void) => Promise<null>;
+  
+  message: string = '';
+
+  usernames: String[] = [];
+
+  chatmessages: ChatMessage[] = [];
+
+  mounted(){
+    this.chat_listenMessage((chatMessage: ChatMessage) => {
+      this.chatmessages.push(chatMessage);
+      this.message = '';
+    });
+    this.room_listenUserConnected((usernames: string[]) => {
+      this.usernames = usernames;
+    });
+    this.room_refreshUsersConnected(this.currentUser);
+  }
+
+  sendMessage(message: string){
+    if(message.length === 0){
       return;
     }
-    
-    const chatmessage = new ChatMessage();
 
-    chatmessage.username = this.currentUser.name;
-    chatmessage.message = message;
-    chatmessage.time = new Date();
-    this.tempchatmessages.push(chatmessage);
-    this.message = '';
+    const chatMessage = new ChatMessage();
+    chatMessage.username = this.currentUser.name;
+    chatMessage.message = message;
+    chatMessage.time = new Date();
+    chatMessage.roomname = this.currentUser.room.roomname;
+    this.chat_sendMessage(chatMessage);
   }
 }
 
@@ -72,7 +92,8 @@ export default class Chat extends Vue {
 .playerscontainer{
   display:flex;
   width:100%;
-  height:auto;
+  height: 45px;
+  overflow: hidden;
   flex-direction: row-reverse;
   align-items: center;
   justify-content: center;

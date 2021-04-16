@@ -56,10 +56,10 @@ export default class Home extends Vue {
   @Action("CONNECT_SOCKET")
   connectSocket!: () => Promise<SocketResponse>;
   
-  @Action("CREATE_ROOM")
+  @Action("ROOM_CREATE")
   createRoom!: (user: User) => Promise<SocketResponse>;
 
-  @Action("JOIN_ROOM")
+  @Action("ROOM_JOIN")
   joinRoom!: (user: User) => Promise<SocketResponse>;
 
   currentUser: User = new User();

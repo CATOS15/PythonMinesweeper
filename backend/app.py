@@ -59,20 +59,35 @@ class HTTPResponse:
 def default():
     return ""    
 
-@app.route("/sendmessage/<to>/<msg>")
-def sendmessage(to, msg):
-    socketio.emit("emitTest", {"data": msg}, room=to)
+@socketio.on("sendmessage")
+def sendmessage(jsondata):
+    data = json.loads(jsondata)
+    room = rooms[data["roomname"]]
+    if(not request.sid in room):
+        return "Brugeren er ikke i rummet!"
+        
+    socketio.emit("emitMessage", json.dumps(data), room=data["roomname"])
     return (
         "Beskeden ( "
-        + msg
-        + ' ) blev sendt til rum/person med id ' + to
+        + data["message"]
+        + ' ) blev sendt til rum/person med id ' + data["roomname"]
     )
 
     
-@socketio.on("onClick")
-def onClick(coordinate):
+@socketio.on("onClickPos")
+def onClickPos(coordinate):
     rooms['roomname']
     return HTTPResponse("Rum findes ikke!",False).toJSON()
+
+@socketio.on("refreshUsersconnected")
+def refreshUsersconnected(jsondata):
+    data = json.loads(jsondata)
+    room = rooms[data["room"]["roomname"]]
+    if(not request.sid in room):
+        return "Brugeren er ikke i rummet!"
+
+    return emitUsersconnected(room, data["room"]["roomname"])
+
 
 @socketio.on("joinroom")
 def joinroom(jsondata):
@@ -124,6 +139,7 @@ def removefromroom(sid):
         if(request.sid in room):
             print("Bruger " + rooms[roomname][sid] + " afbrød forbindelsen med rummet " + roomname)
             del rooms[roomname][sid]
+            emitUsersconnected(room, roomname)
             if len(rooms[roomname]) == 0:
                 print("Da et rum er tomt slettes dette " + roomname)
                 close_room(roomname)
@@ -131,6 +147,17 @@ def removefromroom(sid):
             return True
 
     return False
+
+def emitUsersconnected(room, roomname):
+    usernames = []
+
+    for sid in room:
+        username = room[sid]
+        usernames.append(username)
+
+    socketio.emit("emitUsersconnected", json.dumps(usernames), room=roomname)
+    return usernames
+
 
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5005)

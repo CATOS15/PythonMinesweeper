@@ -1,3 +1,4 @@
+import ChatMessage from '@/models/chatMessage'
 import SocketResponse from '@/models/socketResponse'
 import User from '@/models/user'
 import { io, Socket } from 'socket.io-client'
@@ -14,7 +15,7 @@ const storeOptions: StoreOptions<SocketState> = {
     currentUser: new User()
   },
   actions: {
-    CONNECT_SOCKET(){
+    CONNECT_SOCKET(state){
       return new Promise((resolve, reject) => {
         socket = io('ws://' + location.hostname + ':5005');
         socket.on('connect', () => {
@@ -31,7 +32,7 @@ const storeOptions: StoreOptions<SocketState> = {
         });
       });
     },
-    CREATE_ROOM(state, user: User){
+    ROOM_CREATE(state, user: User){
       return new Promise((resolve) => {
         socket.emit("createroom", JSON.stringify(user), (resp: string) => {
           const socketResponse = JSON.parse(resp) as SocketResponse;
@@ -42,7 +43,7 @@ const storeOptions: StoreOptions<SocketState> = {
         });
       });
     },
-    JOIN_ROOM(state, user: User){
+    ROOM_JOIN(state, user: User){
       return new Promise((resolve) => {
         socket.emit("joinroom", JSON.stringify(user), (resp: string) => {
           const socketResponse = JSON.parse(resp) as SocketResponse;
@@ -53,12 +54,39 @@ const storeOptions: StoreOptions<SocketState> = {
         });
       });
     },
-    LEAVE_ROOM(state){
+    ROOM_LEAVE(state){
       return new Promise((resolve) => {
         socket.emit("leaveroom", () => {
           this.commit("SET_CURRENT_USER", new User());
           resolve(null);
         });
+      });
+    },
+    ROOM_REFRESH_USERSCONNECTED(state, user: User){
+      return new Promise((resolve) => {
+        socket.emit("refreshUsersconnected", JSON.stringify(user), () => {
+          resolve(null);
+        });
+      });
+    },
+    ROOM_LISTEN_USERSCONNECTED(state, callback: (usernames: string[]) => void){
+      socket.on("emitUsersconnected", (resp: string) => {
+        const usernames = JSON.parse(resp) as string[];
+        callback(usernames);
+      });
+    },
+    CHAT_SENDMESSAGE(state, message: String){
+      return new Promise((resolve) => {
+        socket.emit("sendmessage", JSON.stringify(message), (resp: string) => {
+          console.log(resp);
+          resolve(resp);
+        });
+      });
+    },
+    CHAT_LISTEN_MESSAGE(state, callback: (chatMessage: ChatMessage) => void){
+      socket.on("emitMessage", (resp: string) => {
+        const chatMessage = JSON.parse(resp) as ChatMessage;
+        callback(chatMessage);
       });
     }
   },
