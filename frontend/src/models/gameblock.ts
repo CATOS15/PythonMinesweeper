@@ -1,5 +1,5 @@
-import { BlockState } from "./enums";
+import { Field } from "./enums";
 
 export default class GameBlock {
-    BlockState: BlockState = BlockState.BLOCK;
+    field: Field = Field.BLOCK;
 }

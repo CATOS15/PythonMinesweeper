@@ -6,7 +6,7 @@ export enum Difficulty{
     EASY=1, MEDIUM=2, HARD=3
 }
 
-export enum BlockState{
+export enum Field{
     BLOCK = 10, 
     FLAG = 11, 
     BOMB = 12, 

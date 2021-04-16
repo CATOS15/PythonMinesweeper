@@ -2,6 +2,7 @@ from flask import Flask, request
 from flask_socketio import SocketIO, close_room, join_room, leave_room
 import json
 from MineSweeperLogic import *
+import time 
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "minesw!eper_miss3kat"
@@ -90,7 +91,7 @@ def leftClick(jsondata):
 
     gameboard = gameboards[data["roomname"]]
     fields = gameboard.click(x,y,False)
-    
+
     socketio.emit("emitLeftClick", json.dumps(fields), room=data["roomname"])
     
 
@@ -111,14 +112,14 @@ def leftClick(jsondata):
 #     return HTTPResponse(fields,True).toJSON()
 
 
-@socketio.on("refreshUsersconnected")
-def refreshUsersconnected(jsondata):
+@socketio.on("refreshUsersConnected")
+def refreshUsersConnected(jsondata):
     data = json.loads(jsondata)
     room = rooms[data["room"]["roomname"]]
     if(not request.sid in room):
         return "Brugeren er ikke i rummet!"
 
-    return emitUsersconnected(room, data["room"]["roomname"])
+    return emitUsersConnected(room, data["room"]["roomname"])
 
 
 @socketio.on("joinroom")
@@ -177,7 +178,7 @@ def removefromroom(sid):
         if(request.sid in room):
             print("Bruger " + rooms[roomname][sid] + " afbrød forbindelsen med rummet " + roomname)
             del rooms[roomname][sid]
-            emitUsersconnected(room, roomname)
+            emitUsersConnected(room, roomname)
             if len(rooms[roomname]) == 0:
                 print("Da et rum er tomt slettes dette " + roomname)
                 close_room(roomname)
@@ -188,16 +189,16 @@ def removefromroom(sid):
 
     return False
 
-def emitUsersconnected(room, roomname):
+def emitUsersConnected(room, roomname):
     usernames = []
 
     for sid in room:
         username = room[sid]
         usernames.append(username)
 
-    socketio.emit("emitUsersconnected", json.dumps(usernames), room=roomname)
+    socketio.emit("emitUsersConnected", json.dumps(usernames), room=roomname)
     return usernames
 
 
 if __name__ == "__main__":
-    socketio.run(app, host="0.0.0.0", port=5005)
+    socketio.run(app, host="0.0.0.0", port=5005, debug=True)

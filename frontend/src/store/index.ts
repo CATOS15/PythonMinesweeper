@@ -1,7 +1,8 @@
 import ChatMessage from '@/models/chatMessage'
+import Coordinate from '@/models/coordinate'
 import SocketResponse from '@/models/socketResponse'
 import User from '@/models/user'
-import { io, Socket } from 'socket.io-client'
+import { io, Socket, SocketOptions } from 'socket.io-client'
 import Vue from 'vue'
 import Vuex, { StoreOptions } from 'vuex'
 import { SocketState } from './statetypes'
@@ -17,7 +18,7 @@ const storeOptions: StoreOptions<SocketState> = {
   actions: {
     CONNECT_SOCKET(state){
       return new Promise((resolve, reject) => {
-        socket = io('ws://' + location.hostname + ':5005');
+        socket = io('ws://' + location.hostname + ':5005', {transports: ["websocket"]});
         socket.on('connect', () => {
           const socketResponse = new SocketResponse();
           socketResponse.msg = "Forbindelse til socket oprettet";
@@ -37,6 +38,9 @@ const storeOptions: StoreOptions<SocketState> = {
         socket.emit("createroom", JSON.stringify(user), (resp: string) => {
           const socketResponse = JSON.parse(resp) as SocketResponse;
           if(socketResponse.success){
+            const size = JSON.parse(socketResponse.msg);
+            user.room.height = size.height;
+            user.room.width = size.width;
             this.commit("SET_CURRENT_USER", user);
           }
           resolve(socketResponse);
@@ -48,6 +52,9 @@ const storeOptions: StoreOptions<SocketState> = {
         socket.emit("joinroom", JSON.stringify(user), (resp: string) => {
           const socketResponse = JSON.parse(resp) as SocketResponse;
           if(socketResponse.success){
+            const size = JSON.parse(socketResponse.msg);
+            user.room.height = size.height;
+            user.room.width = size.width;
             this.commit("SET_CURRENT_USER", user);
           }
           resolve(socketResponse);
@@ -64,21 +71,33 @@ const storeOptions: StoreOptions<SocketState> = {
     },
     ROOM_REFRESH_USERSCONNECTED(state, user: User){
       return new Promise((resolve) => {
-        socket.emit("refreshUsersconnected", JSON.stringify(user), () => {
+        socket.emit("refreshUsersConnected", JSON.stringify(user), () => {
           resolve(null);
         });
       });
     },
     ROOM_LISTEN_USERSCONNECTED(state, callback: (usernames: string[]) => void){
-      socket.on("emitUsersconnected", (resp: string) => {
+      socket.on("emitUsersConnected", (resp: string) => {
         const usernames = JSON.parse(resp) as string[];
         callback(usernames);
+      });
+    },
+    FIELD_LEFTCLICK(state, coordinate: Coordinate){
+      return new Promise((resolve) => {
+        socket.emit("leftClick", JSON.stringify(coordinate), () => {
+          resolve(null);
+        });
+      });
+    },
+    FIELD_LISTEN_LEFTCLICK(state, callback: (grid: Coordinate[]) => void){
+      socket.on("emitLeftClick", (resp: string) => {
+        const grid = JSON.parse(resp) as Coordinate[];
+        callback(grid);
       });
     },
     CHAT_SENDMESSAGE(state, message: String){
       return new Promise((resolve) => {
         socket.emit("sendmessage", JSON.stringify(message), (resp: string) => {
-          console.log(resp);
           resolve(resp);
         });
       });
@@ -92,9 +111,6 @@ const storeOptions: StoreOptions<SocketState> = {
   },
   mutations: {
     SET_CURRENT_USER(state, user: User){
-      //TODO: Slet når backend returnerer højde og bredde
-      user.room.width = 20;
-      user.room.height = 15;
       state.currentUser = user;
     }
   },
