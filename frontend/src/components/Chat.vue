@@ -5,7 +5,7 @@
         <div class="playercircle unselectable" :title="username" :class="{'active':currentUser.name.toLowerCase() == username.toLowerCase()}">{{username[0].toUpperCase()}}</div>
       </div>
     </div>
-    <div class="messagescontainer gradientbackground">
+    <div class="messagescontainer gradientbackground" dir="ltr">
       <div v-for="(chatmessage,chatmessage_index) in tempchatmessages" :key="chatmessage_index">
         <p>
           <b>{{chatmessage.username}}: </b>
@@ -100,6 +100,7 @@ export default class Chat extends Vue {
   justify-content: center;
   align-items: center;
   font-weight: 900;
+  padding: 1px 0 0 1px;
 }
 
 .playercircle.active{
@@ -115,13 +116,21 @@ export default class Chat extends Vue {
   width:100%;
   height:500px;
   background-color:#444;
-  padding: 5px 10px;
+  padding: 5px 0px 5px 10px;
   border-radius:20px ;
   margin: 0 0 10px 0; 
+  overflow:auto;
+  scroll-snap-type: y mandatory;
+  scrollbar-gutter: always;
+}
+
+.messagescontainer > div{
+  box-sizing:border-box;
 }
 
 .messagescontainer > * p{
   margin-bottom: 0px;
+  word-wrap: break-word;
 }
 
 /* input */
@@ -167,6 +176,35 @@ button {
   /* Just a little styling to make it pretty */
   background:#112c49;
   color:white;
+}
+
+
+/* https://stackoverflow.com/questions/23200639/transparent-scrollbar-with-css/56365213 */
+/* */
+/* width */
+::-webkit-scrollbar {
+    width: 18px;
+    height: 18px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0);
+  margin-top:14px;
+  margin-bottom:14px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  height: 6px;
+    border-right: 9px solid rgba(0, 0, 0, 0);
+    border-left: 4px solid rgba(0, 0, 0, 0);
+    background-clip: padding-box;
+    background-color: rgba(0, 0, 0, 0.45);
+}
+
+::-webkit-scrollbar-corner {
+    background-color: transparent;
 }
 
 </style>
