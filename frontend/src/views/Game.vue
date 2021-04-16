@@ -26,7 +26,7 @@
             </div>
           </div>
         </div>
-        <div class="chat">
+        <div class="chat" v-if="initChat">
           <Chat />
         </div>
       </div>
@@ -48,11 +48,13 @@ import User from '@/models/user';
   },
 })
 export default class Game extends Vue {
-  @Action("LEAVE_ROOM")
+  @Action("ROOM_LEAVE")
   leaveRoom!: () => Promise<null>;
 
   @Getter('GET_CURRENT_USER')
   currentUser!: User;
+
+  initChat: boolean = false;
   
   grid: GameBlock[][] = [];  
 
@@ -68,6 +70,7 @@ export default class Game extends Vue {
           this.grid[y][x] = new GameBlock();
       }
     }
+    this.initChat = true;
   }
   socketleave(){
     this.leaveRoom().then(()=>{
