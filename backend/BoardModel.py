@@ -1,6 +1,6 @@
 from enum import Enum
 import math
-from random import randrange,uniform
+from random import randrange,uniform,choice
 import json
 
 class Field:
@@ -9,8 +9,9 @@ class Field:
         self.visited = visited
 
 class GameBoard:
-    def __init__(self,hidden,width,height,numberOfMines,newGame,difficulty):
+    def __init__(self,hidden,shown,width,height,numberOfMines,newGame,difficulty):
         self.hidden = hidden
+        self.shown = shown
         self.width = width
         self.height = height
         self.numberOfMines = numberOfMines
@@ -23,25 +24,31 @@ class GameBoard:
     returnValues = []
 
     def initEmptyGameBoards(self): 
-        #self.shown = [[0 for x in range(self.width)] for y in range(self.height)]
+        self.shown = [[0 for x in range(self.width)] for y in range(self.height)]
         self.hidden =  [[0 for x in range(self.width)] for y in range(self.height)]
         
         for x in range(self.width):
             for y in range(self.height):
                 self.hidden[x][y] = Field(FieldValue.HIDDEN,False)
+                self.shown[x][y] = Field(FieldValue.HIDDEN,False)
+
             
                 
     def initGameBoard(self,x,y):
         returnValues = []
 
         ## init blank area
-        returnValues = self.initBlankStartArea(x,y)
+        returnValues = self.initBlankStartArea2(x,y)
 
         ## Insert n number of mines in grid
         self.initMines(self.width,self.height)
 
         ## Add fields depending on proximity of mines
         self.initFields()
+
+
+        ##self.recursiveFind2(x,y)
+        self.floodFill(x,y)
 
         return returnValues
 
@@ -51,7 +58,46 @@ class GameBoard:
 
         if (x >= 0 and y >= 0) and (x < self.width and y < self.height):
             self.hidden[x][y].fieldValue = FieldValue.BLANK
+            self.shown[x][y].fieldValue = FieldValue.BLANK
             returnValues.append({'x':x,'y':y,'field':self.hidden[x][y].fieldValue.value})
+
+        return returnValues
+    
+    def initBlankStartArea2(self,x,y):
+        returnValues = []
+
+        ## Calculate num of blank fields 5%-25% blank fields
+        min = 0.025
+        max = 0.075
+        num_fields = self.height * self.width
+        procent_of_blank = uniform(min,max)
+        num_blank_fields = math.floor(num_fields*procent_of_blank)
+
+        while len(returnValues) < num_blank_fields:
+            if (x >= 0 and y >= 0) and (x < self.width and y < self.height):
+                if not self.hidden[x][y].visited:
+                    if self.hidden[x][y].fieldValue != FieldValue.BLANK:
+
+                        self.hidden[x][y].fieldValue = FieldValue.BLANK
+                        ##self.hidden[x][y].visited = True
+                        
+                        self.shown[x][y].fieldValue = FieldValue.BLANK
+                        ##self.shown[x][y].visited = True
+
+                        returnValues.append({'x':x,'y':y,'field':self.shown[x][y].fieldValue.value})
+
+            ## Pick random inserted point
+            random_coor = randrange(0,len(returnValues))
+            x = returnValues[random_coor].get("x")
+            y = returnValues[random_coor].get("y")
+
+            XorY =  randrange(0,2)
+            num_list = [-1,1]
+            UporDown =  choice(num_list)
+            if(XorY == 0):
+                x = UporDown + x
+            elif(XorY == 1):
+                y = UporDown + y
 
         return returnValues
 
@@ -59,14 +105,24 @@ class GameBoard:
         mines_placed = 0
 
         while mines_placed < self.numberOfMines:
+            mineNear = False
+
             x_mine = randrange(0,width)
             y_mine = randrange(0,height)
-            
-            if width == x_mine and height == y_mine or self.hidden[x_mine][y_mine].fieldValue == FieldValue.MINE or self.hidden[x_mine][y_mine].fieldValue == FieldValue.BLANK:
-                continue
 
-            self.hidden[x_mine][y_mine].fieldValue = FieldValue.MINE
-            mines_placed += 1
+            for x in range(x_mine-1,x_mine+2):
+                for y in range(y_mine-1,y_mine+2):
+                    if (x >= 0 and y >= 0) and (x < self.width and y < self.height):
+                        if self.hidden[x][y].fieldValue == FieldValue.BLANK:
+                            mineNear = True
+                            break
+
+            if not mineNear:
+                if width == x_mine and height == y_mine or self.hidden[x_mine][y_mine].fieldValue == FieldValue.MINE or self.hidden[x_mine][y_mine].fieldValue == FieldValue.BLANK:
+                    continue
+
+                self.hidden[x_mine][y_mine].fieldValue = FieldValue.MINE
+                mines_placed += 1
 
     def initFields(self):
         for x in range(self.width):
@@ -96,14 +152,78 @@ class GameBoard:
                 returnValues = self.initGameBoard(start_x,start_y)
                 self.newGame = False
             elif rightClick:
-                self.hidden[start_x][start_y].fieldValue = FieldValue.FLAG
-                returnValues.append({'x':start_x,'y':start_y,'field':self.hidden[start_x][start_y].fieldValue.value})
+                if self.shown[start_x][start_y].fieldValue == FieldValue.FLAG:
+                    self.shown[start_x][start_y].fieldValue = FieldValue.HIDDEN
+                elif self.shown[start_x][start_y].fieldValue == FieldValue.HIDDEN:
+                    self.shown[start_x][start_y].fieldValue = FieldValue.FLAG
+                    
+                returnValues.append({'x':start_x,'y':start_y,'field':self.shown[start_x][start_y].fieldValue.value})
             else:
-                returnValues.append({'x':start_x,'y':start_y,'field':self.hidden[start_x][start_y].fieldValue.value})
+                #returnValues.append({'x':start_x,'y':start_y,'field':self.hidden[start_x][start_y].fieldValue.value})
+                #returnValues.append(self.recursiveFind2(start_x,start_y))
+                self.floodFill(start_x,start_y)
 
         return returnValues
 
+    def floodFill(self,x,y):
+        if x < 0 or x >= len(self.hidden) or y < 0 or y >= len(self.hidden[0]):
+            return
+        
+        if self.hidden[x][y].fieldValue != FieldValue.BLANK:
+            self.shown[x][y].fieldValue = self.hidden[x][y].fieldValue
+            self.hidden[x][y].visited = True
+            return
+        elif self.hidden[x][y].fieldValue == FieldValue.BLANK and self.hidden[x][y].visited:
+            return
+        elif self.hidden[x][y].fieldValue == FieldValue.BLANK and not self.hidden[x][y].visited:
+            self.shown[x][y].fieldValue = self.hidden[x][y].fieldValue
+            self.hidden[x][y].visited = True
 
+        self.floodFill(x+1,y)
+        self.floodFill(x-1,y)
+        self.floodFill(x,y+1)
+        self.floodFill(x,y-1)
+
+
+    def recursiveFind2(self,start_x,start_y):
+        for x in range(start_x-1,start_x+2):
+            for y in range(start_y-1,start_y+2):
+                if (x >= 0 and y >= 0) and (x < self.width and y < self.height):
+                    if (x != start_x and y != start_y) or not self.hidden[x][y].visited:
+                        ## Recurse if blank
+                        if self.hidden[x][y].fieldValue == FieldValue.BLANK:
+                            self.shown[x][y] = self.hidden[x][y].fieldValue
+                            if not self.hidden[x][y].visited:
+                                self.hidden[x][y].visited = False
+                                self.recursiveFind2(x,y)
+                        else:
+                            self.shown[x][y] = self.hidden[x][y].fieldValue
+                            self.hidden[x][y].visited = True
+        return
+
+
+
+    def recursiveFind(self,x,y):
+        if (x >= 0 and y >= 0) and (x < self.width and y < self.height):
+            if self.hidden[x][y].visited:
+                return
+            
+            if self.hidden[x][y].fieldValue.value >= 1 and self.hidden[x][y].fieldValue.value <= 9:
+                self.shown[x][y].fieldValue = self.hidden[x][y].fieldValue
+                self.hidden[x][y].visited = True
+                
+            elif self.hidden[x][y].fieldValue == FieldValue.BLANK:
+                self.shown[x][y].fieldValue = self.hidden[x][y].fieldValue
+                self.hidden[x][y].visited = True
+                
+                self.recursiveFind(x+1,y)
+                self.recursiveFind(x-1,y)
+                self.recursiveFind(x,y+1)
+                self.recursiveFind(x,y-1)
+        
+        
+            return {'x':x,'y':y,'field':self.shown[x][y].fieldValue.value}
+            
             
             #returnValues.append("{Coordinates['x1:']}")
 
@@ -215,7 +335,7 @@ class GameBoard:
         
                 
 class FieldValue(Enum):
-    HIDDEN = 10  ## Facedown, not marked
+    HIDDEN = 9  ## Facedown, not marked
     FLAG = 11    ## There is a flag
     MINE = 12    ## There is a mine
     BLANK = 0    ## Click no mine near

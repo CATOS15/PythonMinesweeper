@@ -15,7 +15,7 @@ def onClick(gameboard,x,y):
     returnValues = []
 
     if gameboard.newGame:
-        returnValues = gameboard.initGameBoard(2,2)
+        returnValues = gameboard.initGameBoard(10,10)
         gameboard.newGame = False
    
     
@@ -25,8 +25,8 @@ def onClick(gameboard,x,y):
 
 
 def initGame(difficulty,width,height):
-    numberOfMines = 5
-    gameboard = GameBoard(None,width,height,numberOfMines,True,difficulty)
+    numberOfMines = 99
+    gameboard = GameBoard(None,None,width,height,numberOfMines,True,difficulty)
 
     ## Init empty gameboard
     gameboard.initEmptyGameBoards()
@@ -37,7 +37,7 @@ def initGame(difficulty,width,height):
 
 
 def printGameboard(gameboard):
-    for r in gameboard.hidden:
+    for r in gameboard:
         for c in r:
             print(str(c.fieldValue.value),end = " ")
         print()
@@ -48,14 +48,20 @@ def printGameboard(gameboard):
 
 
 returnValues = []
-gameboard = initGame(1,5,5)
-printGameboard(gameboard)
+gameboard = initGame(1,24,24)
+#printGameboard(gameboard)
 
-returnValues = gameboard.initGameBoard(2,2)
-printGameboard(gameboard)
+returnValues = gameboard.initGameBoard(10,10)
+
+printGameboard(gameboard.hidden)
+print("Shown:")
+printGameboard(gameboard.shown)
 print(returnValues)
 print("\n")
 
-returnValues = gameboard.click(4,4,False)
-print(returnValues)
-print("\n")
+# returnValues = gameboard.click(4,4,False)
+# print("Shown:")
+# printGameboard(gameboard.shown)
+
+##print(returnValues)
+##print("\n")
