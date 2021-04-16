@@ -93,10 +93,8 @@ class GameBoard:
         if (start_x >= 0 and start_y >= 0) and (start_x < self.width and start_y < self.height):
             if self.newGame:
                 self.hidden[start_x][start_y].fieldValue = FieldValue.BLANK
-                self.initGameBoard(start_x,start_y)
+                returnValues = self.initGameBoard(start_x,start_y)
                 self.newGame = False
-                returnValues.append({'x':start_x,'y':start_y,'field':self.hidden[start_x][start_y].fieldValue.value})
-
             elif rightClick:
                 self.hidden[start_x][start_y].fieldValue = FieldValue.FLAG
                 returnValues.append({'x':start_x,'y':start_y,'field':self.hidden[start_x][start_y].fieldValue.value})

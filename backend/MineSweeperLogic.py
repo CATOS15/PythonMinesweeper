@@ -30,7 +30,7 @@ def initGame(difficulty,width,height):
 
     ## Init empty gameboard
     gameboard.initEmptyGameBoards()
-    gameboard.newGame = False  
+    gameboard.newGame = True  
 
     return gameboard
 
