@@ -88,7 +88,7 @@ class GameBoards:
         returnValues = []
 
         if (start_x >= 0 and start_y >= 0) and (start_x < self.width and start_y < self.height):
-            if self.hidden.newGame:
+            if self.newGame:
                 self.hidden[start_x][start_y].fieldValue = FieldValue.BLANK
                 returnValues.append({'x':start_x,'y':start_y,'field':self.hidden[start_x][start_y].fieldValue.value})
             else:

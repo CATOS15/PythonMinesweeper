@@ -26,7 +26,7 @@ def onClick(gameboard,x,y):
 
 def initGame(difficulty,width,height):
     numberOfMines = 5
-    gameboard = GameBoards(None,width,height,numberOfMines,None)
+    gameboard = GameBoards(None,width,height,numberOfMines,True)
 
     ## Init empty gameboard
     gameboard.initEmptyGameBoards()
