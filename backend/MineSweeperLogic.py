@@ -6,39 +6,56 @@ from BoardModel import *
     
 
 
-#def fieldClicked(gameboard):
+def fieldClicked(gameboard):
+    gameboard.blankNeighbors(2,2)
+    printGameboard(gameboard)    
+
+
+def onClick(gameboard,x,y):
+    returnValues = []
+
+    if gameboard.newGame:
+        returnValues = gameboard.initGameBoard(2,2)
+        gameboard.newGame = False
+   
     
-
-    
-
+    return returnValues
 
 
 
-def initGame(numberOfMines,width,height):
-    ## Add information to gameboard
-    print( "test ")
-    gameboard = GameBoards(None,None,width,height,numberOfMines,True)
+
+def initGame(difficulty,width,height):
+    numberOfMines = 5
+    gameboard = GameBoards(None,width,height,numberOfMines,None)
 
     ## Init empty gameboard
     gameboard.initEmptyGameBoards()
+    gameboard.newGame = True  
 
-    ## Init fields in gameboard
-    gameboard.initGameBoard()
-    
-
-    ## Set newgame false
-    gameboard.newGame = False   
-
-    printGameboard(gameboard)    
+    return gameboard
 
 
 
 def printGameboard(gameboard):
     for r in gameboard.hidden:
         for c in r:
-            print(str(c.value),end = " ")
+            print(str(c.fieldValue.value),end = " ")
         print()
+    print("\n")
+
             
 
-initGame(23,5,5)
 
+
+returnValues = []
+gameboard = initGame(1,5,5)
+printGameboard(gameboard)
+
+returnValues = gameboard.initGameBoard(2,2)
+printGameboard(gameboard)
+print(returnValues)
+print("\n")
+
+returnValues = gameboard.onClick(4,4)
+print(returnValues)
+print("\n")

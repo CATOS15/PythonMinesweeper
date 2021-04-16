@@ -1,6 +1,7 @@
 from flask import Flask, request
 from flask_socketio import SocketIO, close_room, join_room, leave_room
 import json
+from MineSweeperLogic import *
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "minesw!eper_miss3kat"
@@ -23,8 +24,25 @@ rooms: {
 		"sid3": "tobias"
 	}
 }
+
+gameboards: {
+    "room1": {
+		"difficulty" : "easy"
+        "gameboard" : "pointer"
+	},
+	"room2": {
+		"difficulty" : "easy"
+        "gameboard" : "pointer"
+	},
+	"room3": {
+		"difficulty" : "easy"
+        "gameboard" : "pointer"
+	}
+}
+
 """
 rooms = {}
+gameboards = {}
 
 class HTTPResponse:
     def __init__(self,msg,success):
@@ -39,8 +57,7 @@ class HTTPResponse:
 
 @app.route("/")
 def default():
-    return ""
-
+    return ""    
 
 @app.route("/sendmessage/<to>/<msg>")
 def sendmessage(to, msg):
@@ -50,6 +67,12 @@ def sendmessage(to, msg):
         + msg
         + ' ) blev sendt til rum/person med id ' + to
     )
+
+    
+@socketio.on("onClick")
+def onClick(coordinate):
+    rooms['roomname']
+    return HTTPResponse("Rum findes ikke!",False).toJSON()
 
 @socketio.on("joinroom")
 def joinroom(jsondata):
@@ -76,6 +99,12 @@ def createroom(jsondata):
     if(data["room"]["roomname"] in rooms):
         return HTTPResponse('Rummet findes ikke',False).toJSON()
     else:
+        ## Create gameboard
+        gameboards[data["room"]["roomname"]] = {}
+        gameboards[data["room"]["roomname"]]["difficulty"] = data["room"]["difficulty"]
+        gameboards[data["room"]["roomname"]]["gameboard"] = initGame(data["room"]["difficulty"],5,5)
+
+
         rooms[data["room"]["roomname"]] = {}
         rooms[data["room"]["roomname"]][request.sid] = data["name"]
         join_room(data["room"]["roomname"])
