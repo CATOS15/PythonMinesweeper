@@ -27,17 +27,21 @@ rooms: {
 
 gameboards: {
     "room1": {
-		"difficulty" : "easy"
-        "gameboard" : "pointer"
+		"hidden (evt. board)" : [FieldValue.Blank][FieldValue.Mine]
+        "width" : 5
+        "height" : 5
+        "numberOfMines" : 4
+        "newGame" : "False"
+        "difficulty" : "1" (ENUM - medium)
 	},
-	"room2": {
-		"difficulty" : "easy"
-        "gameboard" : "pointer"
+    "room2": {
+		"hidden (evt. board)" : [FieldValue.Blank][FieldValue.Mine]
+        "width" : 5
+        "height" : 5
+        "numberOfMines" : 4
+        "newGame" : "False"
+        "difficulty" : "1" (ENUM - medium)
 	},
-	"room3": {
-		"difficulty" : "easy"
-        "gameboard" : "pointer"
-	}
 }
 
 """
@@ -74,10 +78,38 @@ def sendmessage(jsondata):
     )
 
     
-@socketio.on("onClickPos")
-def onClickPos(coordinate):
-    rooms['roomname']
-    return HTTPResponse("Rum findes ikke!",False).toJSON()
+@socketio.on("leftClick")
+def leftClick(jsondata):
+    data = json.loads(jsondata)
+    room = rooms[data["roomname"]]
+    if(not request.sid in room):
+        return "Brugeren er ikke i rummet!"
+
+    x = data["x"]
+    y = data["y"]
+
+    gameboard = gameboards[data["roomname"]]
+    fields = gameboard.click(x,y,False)
+    
+    socketio.emit("emitLeftClick", json.dumps(fields), room=data["roomname"])
+    
+
+    
+# @socketio.on("rightClick")
+# def rightClick(jsondata):
+#     data = json.loads(jsondata)
+#     room = rooms[data["roomname"]]
+#     if(not request.sid in room):
+#         return "Brugeren er ikke i rummet!"
+
+#     x = data["x"]
+#     y = data["y"]
+
+#     gameboard = gameboards[data["roomname"]]
+#     fields = gameboard.click(x,y,True)
+    
+#     return HTTPResponse(fields,True).toJSON()
+
 
 @socketio.on("refreshUsersconnected")
 def refreshUsersconnected(jsondata):
@@ -99,7 +131,11 @@ def joinroom(jsondata):
     if(data["room"]["roomname"] in rooms):
         rooms[data["room"]["roomname"]][request.sid] = data["name"]
         join_room(data["room"]["roomname"])
-        return HTTPResponse("Tilsluttet " + data["room"]["roomname"] + " med disse brugere " + str(rooms[data["room"]["roomname"]]),True).toJSON()
+
+        gameboard = gameboards[data["room"]["roomname"]]
+        response = {'width':gameboard.width,'height':gameboard.height}
+
+        return HTTPResponse(json.dumps(response),True).toJSON()
     else:
         return HTTPResponse("Rum findes ikke!",False).toJSON()
 
@@ -115,15 +151,17 @@ def createroom(jsondata):
         return HTTPResponse('Rummet findes ikke',False).toJSON()
     else:
         ## Create gameboard
-        gameboards[data["room"]["roomname"]] = {}
-        gameboards[data["room"]["roomname"]]["difficulty"] = data["room"]["difficulty"]
-        gameboards[data["room"]["roomname"]]["gameboard"] = initGame(data["room"]["difficulty"],5,5)
+        gameboards[data["room"]["roomname"]] = initGame(data["room"]["difficulty"],5,5)
 
 
         rooms[data["room"]["roomname"]] = {}
         rooms[data["room"]["roomname"]][request.sid] = data["name"]
         join_room(data["room"]["roomname"])
-        return HTTPResponse('Rummet blev oprettet',True).toJSON()
+
+        gameboard = gameboards[data["room"]["roomname"]]
+        response = {'width':gameboard.width,'height':gameboard.height}
+
+        return HTTPResponse(json.dumps(response),True).toJSON()
 
 @socketio.on("leaveroom")
 def leaveroom():
@@ -144,7 +182,9 @@ def removefromroom(sid):
                 print("Da et rum er tomt slettes dette " + roomname)
                 close_room(roomname)
                 del rooms[roomname]
+                del gameboards[roomname]
             return True
+            
 
     return False
 

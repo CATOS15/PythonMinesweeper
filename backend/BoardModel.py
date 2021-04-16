@@ -8,14 +8,17 @@ class Field:
         self.fieldValue = fieldValue
         self.visited = visited
 
-class GameBoards:
-    def __init__(self,hidden,width,height,numberOfMines,newGame):
+class GameBoard:
+    def __init__(self,hidden,width,height,numberOfMines,newGame,difficulty):
         self.hidden = hidden
         self.width = width
         self.height = height
         self.numberOfMines = numberOfMines
         self.newGame = newGame
+        self.difficulty = difficulty
 
+
+        
     ## Global return list
     returnValues = []
 
@@ -84,12 +87,15 @@ class GameBoards:
 
 
 
-    def onClick(self,start_x,start_y):
+    def click(self,start_x,start_y,rightClick):
         returnValues = []
 
         if (start_x >= 0 and start_y >= 0) and (start_x < self.width and start_y < self.height):
             if self.newGame:
                 self.hidden[start_x][start_y].fieldValue = FieldValue.BLANK
+                returnValues.append({'x':start_x,'y':start_y,'field':self.hidden[start_x][start_y].fieldValue.value})
+            elif rightClick:
+                self.hidden[start_x][start_y].fieldValue = FieldValue.FLAG
                 returnValues.append({'x':start_x,'y':start_y,'field':self.hidden[start_x][start_y].fieldValue.value})
             else:
                 returnValues.append({'x':start_x,'y':start_y,'field':self.hidden[start_x][start_y].fieldValue.value})
