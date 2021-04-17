@@ -90,7 +90,7 @@ def leftClick(jsondata):
     y = data["y"]
 
     gameboard = gameboards[data["roomname"]]
-    fields = gameboard.click(x,y,False)
+    fields = gameboard.leftClick([],x,y)
 
     socketio.emit("emitLeftClick", json.dumps(fields), room=data["roomname"])
     
@@ -152,7 +152,7 @@ def createroom(jsondata):
         return HTTPResponse('Rummet findes ikke',False).toJSON()
     else:
         ## Create gameboard
-        gameboards[data["room"]["roomname"]] = initGame(data["room"]["difficulty"],5,5)
+        gameboards[data["room"]["roomname"]] = initGame(data["room"]["difficulty"])
 
 
         rooms[data["room"]["roomname"]] = {}

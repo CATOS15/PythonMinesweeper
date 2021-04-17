@@ -1,10 +1,6 @@
-from BoardModel import *
-
-
-
+from BoardModel2 import *
 
     
-
 
 def fieldClicked(gameboard):
     gameboard.blankNeighbors(2,2)
@@ -24,13 +20,29 @@ def onClick(gameboard,x,y):
 
 
 
-def initGame(difficulty,width,height):
-    numberOfMines = 99
-    gameboard = GameBoard(None,None,width,height,numberOfMines,True,difficulty)
+def initGame(difficulty):
+    ## Set number of mines
+    numberOfMines = 0
+    width = 0
+    height = 0
+
+    if difficulty == 0:
+        numberOfMines = 10
+        width = 10
+        height = 8
+    elif difficulty == 1:
+        numberOfMines = 40
+        width = 14
+        height = 14
+    elif difficulty == 2:
+        numberOfMines = 99
+        width = 24
+        height = 20
+
+    gameboard = GameBoard(width,height,numberOfMines)
 
     ## Init empty gameboard
     gameboard.initEmptyGameBoards()
-    gameboard.newGame = True  
 
     return gameboard
 
@@ -47,21 +59,21 @@ def printGameboard(gameboard):
 
 
 
-returnValues = []
-gameboard = initGame(1,24,24)
-#printGameboard(gameboard)
+# returnValues = []
+# gameboard = initGame(1,24,24)
+# #printGameboard(gameboard)
 
-returnValues = gameboard.initGameBoard(10,10)
+# returnValues = gameboard.initGameBoard(10,10)
 
-printGameboard(gameboard.hidden)
-print("Shown:")
-printGameboard(gameboard.shown)
-print(returnValues)
-print("\n")
-
-# returnValues = gameboard.click(4,4,False)
+# printGameboard(gameboard.hidden)
 # print("Shown:")
 # printGameboard(gameboard.shown)
+# print(returnValues)
+# print("\n")
 
-##print(returnValues)
-##print("\n")
+# # returnValues = gameboard.click(4,4,False)
+# # print("Shown:")
+# # printGameboard(gameboard.shown)
+
+# ##print(returnValues)
+# ##print("\n")
