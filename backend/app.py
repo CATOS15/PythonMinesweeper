@@ -1,3 +1,5 @@
+#coding=utf-8
+
 from GameBoard import GameBoard
 from flask import Flask, request
 from flask_socketio import SocketIO, close_room, join_room, leave_room
