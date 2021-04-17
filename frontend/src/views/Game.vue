@@ -19,8 +19,8 @@
             </div>
           </div>
           <div class="gamegrid">
-            <div v-for="(y,y_index) in grid" :key="y_index" class="gamerow">
-              <div v-for="(x,x_index) in y" :key="x_index">
+            <div v-for="(x,x_index) in grid" :key="x_index" class="gamerow">
+              <div v-for="(y,y_index) in x" :key="y_index">
                 <div class="field" @click="fieldLeftClick(x_index, y_index)" :class="getClass(grid[x_index][y_index].field)">
                 </div>
               </div>
@@ -74,10 +74,10 @@ export default class Game extends Vue {
         return;
     } 
     
-    for(let y=0;y<this.currentUser.room.height;y++){
-      this.grid[y] = [];
-      for(let x=0;x<this.currentUser.room.width;x++){
-          this.grid[y][x] = new GameBlock();
+    for(let x=0;x<this.currentUser.room.width;x++){
+      this.grid[x] = [];
+      for(let y=0;y<this.currentUser.room.height;y++){
+          this.grid[x][y] = new GameBlock();
       }
     }
     this.initChat = true;

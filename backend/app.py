@@ -1,7 +1,7 @@
+from BoardModel2 import GameBoard
 from flask import Flask, request
 from flask_socketio import SocketIO, close_room, join_room, leave_room
 import json
-from MineSweeperLogic import *
 import time 
 
 app = Flask(__name__)
@@ -200,5 +200,32 @@ def emitUsersConnected(room, roomname):
     return usernames
 
 
+def initGame(difficulty):
+    ## Set number of mines
+    numberOfMines = 0
+    width = 0
+    height = 0
+
+    if difficulty == 0:
+        numberOfMines = 10
+        width = 10
+        height = 8
+    elif difficulty == 1:
+        numberOfMines = 40
+        width = 14
+        height = 18
+    elif difficulty == 2:
+        numberOfMines = 99
+        width = 24
+        height = 20
+
+    gameboard = GameBoard(width,height,numberOfMines)
+
+
+    return gameboard
+
+
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5005, debug=True)
+
+

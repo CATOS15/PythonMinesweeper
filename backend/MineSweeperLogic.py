@@ -31,9 +31,9 @@ def initGame(difficulty):
         width = 10
         height = 8
     elif difficulty == 1:
-        numberOfMines = 40
-        width = 14
-        height = 14
+        numberOfMines = 10
+        width = 5
+        height = 5
     elif difficulty == 2:
         numberOfMines = 99
         width = 24
@@ -41,8 +41,6 @@ def initGame(difficulty):
 
     gameboard = GameBoard(width,height,numberOfMines)
 
-    ## Init empty gameboard
-    gameboard.initEmptyGameBoards()
 
     return gameboard
 
