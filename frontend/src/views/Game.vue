@@ -54,6 +54,9 @@ export default class Game extends Vue {
   @Action("ROOM_LEAVE")
   leaveRoom!: () => Promise<null>;
 
+  @Action("ROOM_GET_SHOWN_FIELDS")
+  room_getShownFields!: (user: User) => Promise<Coordinate[]>;
+
   @Action("FIELD_LEFTCLICK")
   field_leftclick!: (coordinate: Coordinate) => Promise<null>;
 
@@ -73,7 +76,6 @@ export default class Game extends Vue {
         router.replace("/");
         return;
     } 
-    
     for(let x=0;x<this.currentUser.room.width;x++){
       this.grid[x] = [];
       for(let y=0;y<this.currentUser.room.height;y++){
@@ -81,6 +83,15 @@ export default class Game extends Vue {
       }
     }
     this.initChat = true;
+    
+    this.room_getShownFields(this.currentUser).then((coordinates: Coordinate[]) => {
+      for(let i = 0;i<coordinates.length;i++){
+        const gameblock = coordinates[i];
+        const row = this.grid[gameblock.x];
+        row[gameblock.y].field = gameblock.field;
+        Vue.set(this.grid, gameblock.x, row);
+      }
+    });
 
     this.field_listenLeftclick((coordinates: Coordinate[]) => {
       for(let i = 0;i<coordinates.length;i++){

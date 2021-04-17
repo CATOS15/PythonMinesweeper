@@ -76,6 +76,17 @@ const storeOptions: StoreOptions<SocketState> = {
         });
       });
     },
+    ROOM_GET_SHOWN_FIELDS(state, user: User){
+      return new Promise((resolve) => {
+        socket.emit("getshownfields", JSON.stringify(user), (resp: string) => {
+          const socketResponse = JSON.parse(resp) as SocketResponse;
+          if(socketResponse.success){
+            const grid = JSON.parse(socketResponse.msg) as Coordinate[];
+            resolve(grid);
+          }
+        });
+      });
+    },
     ROOM_LISTEN_USERSCONNECTED(state, callback: (usernames: string[]) => void){
       socket.on("emitUsersConnected", (resp: string) => {
         const usernames = JSON.parse(resp) as string[];
@@ -95,7 +106,7 @@ const storeOptions: StoreOptions<SocketState> = {
         callback(grid);
       });
     },
-    CHAT_SENDMESSAGE(state, message: String){
+    CHAT_SENDMESSAGE(state, message: ChatMessage){
       return new Promise((resolve) => {
         socket.emit("sendmessage", JSON.stringify(message), (resp: string) => {
           resolve(resp);

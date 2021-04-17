@@ -22,6 +22,12 @@ class GameBoard:
                 self.hidden[x][y] = FieldValue.BLANK
                 self.shown[x][y] = FieldValue.HIDDEN
 
+    def getShownFields(self):
+        fields = []
+        for x, row in enumerate(self.shown):
+            for y, fieldValue in enumerate(row):
+                fields.append({'x':x,'y':y,'field':fieldValue.value})
+        return fields
 
     def rightClick(self,x,y):
         if x < 0 or y < 0 or x >= self.width or y >= self.height:
@@ -67,6 +73,7 @@ class GameBoard:
         for x in range(self.width):
             for y in range(self.height):
                 if self.hidden[x][y] == FieldValue.MINE:
+                    self.shown[x][y] = self.hidden[x][y]
                     fields.append({'x':x,'y':y,'field':self.hidden[x][y].value})
         return fields
 
