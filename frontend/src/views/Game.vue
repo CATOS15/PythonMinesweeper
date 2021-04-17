@@ -12,10 +12,10 @@
         <div class="game">
           <div class="gameinfo h2">
             <div>
-              Flags: 14
+              Flag: 14
             </div>
             <div>
-              Time: 157
+              Tid: 157
             </div>
           </div>
           <div class="gamegrid">

@@ -13,14 +13,13 @@ class GameBoard:
         self.height = height
         self.numberOfMines = numberOfMines
 
-        ## Init empty matrixes
         self.shown = [[0 for x in range(self.height)] for y in range(self.width)]
         self.hidden =  [[0 for x in range(self.height)] for y in range(self.width)]
         
         for x in range(self.width):
             for y in range(self.height):
-                self.hidden[x][y] = FieldValue.BLANK
-                self.shown[x][y] = FieldValue.HIDDEN
+                self.hidden[x][y] = FieldValue.ZERO
+                self.shown[x][y] = FieldValue.BLOCK
 
     def getShownFields(self):
         fields = []
@@ -34,8 +33,8 @@ class GameBoard:
             return
 
         if self.shown[x][y] == FieldValue.FLAG:
-            self.shown[x][y] = FieldValue.HIDDEN
-        elif self.shown[x][y] == FieldValue.HIDDEN:
+            self.shown[x][y] = FieldValue.BLOCK
+        elif self.shown[x][y] == FieldValue.BLOCK:
             self.shown[x][y] = FieldValue.FLAG
 
         return {'x':x,'y':y,'field':self.shown[x][y].value}
@@ -54,7 +53,7 @@ class GameBoard:
             fields = self.revealAllMines(fields)
 
 
-        if  self.hidden[x][y] == FieldValue.BLANK:
+        if  self.hidden[x][y] == FieldValue.ZERO:
             fields = self.leftClick(fields,x,y+1)
             fields = self.leftClick(fields,x,y-1)
             
@@ -114,16 +113,16 @@ class GameBoard:
 
 
 class FieldValue(Enum):
-    HIDDEN = 10  ## Facedown, not marked
-    FLAG = 11    ## There is a flag
-    MINE = 12    ## There is a mine
-    BLANK = 0    ## Click no mine near
-
-    ONE = 1      ## One mine near
-    TWO = 2      ## One mine near
-    THREE = 3    ## One mine near
-    FOUR = 4     ## One mine near
-    FIVE = 5     ## One mine near
-    SIX = 6      ## One mine near
-    SEVEN = 7    ## One mine near
-    EIGHT = 8    ## One mine near
+    BLOCK = 10
+    FLAG = 11
+    MINE = 12
+    
+    ZERO = 0
+    ONE = 1
+    TWO = 2
+    THREE = 3
+    FOUR = 4
+    FIVE = 5
+    SIX = 6
+    SEVEN = 7
+    EIGHT = 8
