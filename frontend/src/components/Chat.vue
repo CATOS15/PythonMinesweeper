@@ -6,7 +6,7 @@
       </div>
     </div>
     <div class="messagescontainer" dir="ltr">
-      <div v-for="(chatmessage,chatmessage_index) in chatmessages" :key="chatmessage_index">
+      <div v-for="(chatmessage,chatmessage_index) in chatmessages" :key="chatmessage_index" :class="{'system' : chatmessage.system}">
         <b>{{chatmessage.username}}: </b>
         <span>{{chatmessage.message}}</span>
       </div>
@@ -25,11 +25,12 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import { Getter, Action } from 'vuex-class';
 import User from '@/models/user';
 import ChatMessage from '@/models/chatMessage';
 import SocketResponse from '@/models/socketResponse';
+import { GameState } from '@/models/enums';
 
 @Component
 export default class Chat extends Vue {
@@ -47,12 +48,35 @@ export default class Chat extends Vue {
 
   @Action("CHAT_LISTEN_MESSAGE")
   chat_listenMessage!: (callback: (chatMessage: ChatMessage) => void) => Promise<null>;
-  
+
+  @Prop({required: true})
+  gamestate!: GameState;
+
   message: string = '';
-
   usernames: String[] = [];
-
   chatmessages: ChatMessage[] = [];
+
+  @Watch('gamestate')
+  gamestateChanged(){
+    if(this.gamestate === GameState.LOST){
+      const chatmessage = new ChatMessage();
+      chatmessage.username = "SYSTEM";
+      chatmessage.message = "SPILLET ER TABT"
+      chatmessage.time = new Date();
+      chatmessage.roomname = this.currentUser.room.roomname;
+      chatmessage.system = true;
+      this.chatmessages.push(chatmessage);
+    }
+    else if(this.gamestate === GameState.WON){
+      const chatmessage = new ChatMessage();
+      chatmessage.username = "SYSTEM";
+      chatmessage.message = "SPILLET ER VUNDET"
+      chatmessage.time = new Date();
+      chatmessage.roomname = this.currentUser.room.roomname;
+      chatmessage.system = true;
+      this.chatmessages.push(chatmessage);
+    }
+  }
 
   mounted(){
     this.chat_listenMessage((chatMessage: ChatMessage) => {
@@ -138,20 +162,23 @@ export default class Chat extends Vue {
   line-height: 21px;
   word-wrap: break-word;
 }
+.messagescontainer > div > b{
+  color:#ffffff;
+}
+.messagescontainer > div.system{
+  font-weight: bold;
+}
+.messagescontainer > div.system > b{
+  color:#87cefa;
+}
+.messagescontainer > div.system > span{
+  color:#ffffff;
+}
 
 .inputcontainer{
   width:100%;
   background-color: #0000004a;
   border-radius:10px ;
-}
-
-.unselectable {
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
 }
 
 .chatinput {

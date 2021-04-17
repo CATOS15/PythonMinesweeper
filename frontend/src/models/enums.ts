@@ -21,3 +21,8 @@ export enum Field{
     NUMBER7 = 7,
     NUMBER8 = 8
 }
+export enum GameState{
+    ACTIVE = 0,
+    LOST = 1,
+    WON = 2
+}

@@ -1,5 +1,6 @@
 import ChatMessage from '@/models/chatMessage'
 import Coordinate from '@/models/coordinate'
+import { GameState } from '@/models/enums'
 import SocketResponse from '@/models/socketResponse'
 import User from '@/models/user'
 import { io, Socket, SocketOptions } from 'socket.io-client'
@@ -93,6 +94,18 @@ const storeOptions: StoreOptions<SocketState> = {
         callback(usernames);
       });
     },
+    ROOM_LISTEN_GAMESTATE(state, callback: (gamestate: GameState) => void){
+      socket.on("emitGamestate", (gamestate: GameState) => {
+        callback(gamestate);
+      });
+    },
+    FIELD_RIGHTCLICK(state, coordinate: Coordinate){
+      return new Promise((resolve) => {
+        socket.emit("rightClick", JSON.stringify(coordinate), () => {
+          resolve(null);
+        });
+      });
+    },
     FIELD_LEFTCLICK(state, coordinate: Coordinate){
       return new Promise((resolve) => {
         socket.emit("leftClick", JSON.stringify(coordinate), () => {
@@ -100,8 +113,8 @@ const storeOptions: StoreOptions<SocketState> = {
         });
       });
     },
-    FIELD_LISTEN_LEFTCLICK(state, callback: (grid: Coordinate[]) => void){
-      socket.on("emitLeftClick", (resp: string) => {
+    FIELD_LISTEN_CLICK(state, callback: (grid: Coordinate[]) => void){
+      socket.on("emitClick", (resp: string) => {
         const grid = JSON.parse(resp) as Coordinate[];
         callback(grid);
       });

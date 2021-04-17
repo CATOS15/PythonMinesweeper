@@ -1,5 +1,5 @@
 <template>
-  <div class="content">
+  <div class="content" @contextmenu.prevent>
       <div class="gameinfo" style="width:1060px;">
         <div>
           <img class="logo" style="cursor:pointer;" src="../../src/assets/bomb_title.png" @click="socketleave" />
@@ -18,17 +18,20 @@
               Tid: 157
             </div>
           </div>
-          <div class="gamegrid">
+          <div class="gamegrid" :class="{'unclickable': gamestate != GameState.ACTIVE}">
             <div v-for="(x,x_index) in grid" :key="x_index" class="gamerow">
               <div v-for="(y,y_index) in x" :key="y_index">
-                <div class="field" @click="fieldLeftClick(x_index, y_index)" :class="getClass(grid[x_index][y_index].field)">
+                <div class="field" 
+                  @click.left="fieldLeftClick(x_index, y_index)" 
+                  @click.right="fieldRightClick(x_index, y_index)"
+                  :class="getClass(grid[x_index][y_index].field)">
                 </div>
               </div>
             </div>
           </div>
         </div>
         <div class="chat" v-if="initChat">
-          <Chat />
+          <Chat :gamestate="gamestate" />
         </div>
       </div>
   </div>
@@ -42,7 +45,7 @@ import GameBlock from '@/models/gameblock';
 import router from '@/router';
 import User from '@/models/user';
 import Coordinate from '@/models/coordinate';
-import { Field } from '@/models/enums';
+import { Field, GameState } from '@/models/enums';
 
 
 @Component({
@@ -57,21 +60,28 @@ export default class Game extends Vue {
   @Action("ROOM_GET_SHOWN_FIELDS")
   room_getShownFields!: (user: User) => Promise<Coordinate[]>;
 
+  @Action("ROOM_LISTEN_GAMESTATE")
+  room_listengamestate!: (callback: (gamestate: GameState) => void) => Promise<null>;
+
   @Action("FIELD_LEFTCLICK")
   field_leftclick!: (coordinate: Coordinate) => Promise<null>;
 
-  @Action("FIELD_LISTEN_LEFTCLICK")
-  field_listenLeftclick!: (callback: (grid: Coordinate[]) => void) => Promise<null>;
+  @Action("FIELD_RIGHTCLICK")
+  field_rightclick!: (coordinate: Coordinate) => Promise<null>;
+
+  @Action("FIELD_LISTEN_CLICK")
+  field_listenclick!: (callback: (grid: Coordinate[]) => void) => Promise<null>;
 
   @Getter('GET_CURRENT_USER')
   currentUser!: User;
 
   Field = Field;
+  GameState = GameState;
   initChat: boolean = false;
   grid: GameBlock[][] = [];  
+  gamestate: GameState = GameState.ACTIVE;
 
-  //VUE Event
-  created (){
+  created(){
     if(!(this.currentUser && this.currentUser.room && this.currentUser.name && this.currentUser.room.roomname && this.currentUser.room.difficulty && this.currentUser.room.width && this.currentUser.room.height)){
         router.replace("/");
         return;
@@ -93,7 +103,11 @@ export default class Game extends Vue {
       }
     });
 
-    this.field_listenLeftclick((coordinates: Coordinate[]) => {
+    this.room_listengamestate((gamestate: GameState) => {
+      this.gamestate = gamestate;
+    });
+
+    this.field_listenclick((coordinates: Coordinate[]) => {
       for(let i = 0;i<coordinates.length;i++){
         const gameblock = coordinates[i];
         const row = this.grid[gameblock.x];
@@ -117,14 +131,20 @@ export default class Game extends Vue {
     this.field_leftclick(coordinate);
   }
 
-  getClass(field: Field){
-    const fieldValue = field.valueOf();
+  fieldRightClick(x: number, y: number){
+    const coordinate = new Coordinate();
+    coordinate.x = x;
+    coordinate.y = y;
+    coordinate.roomname = this.currentUser.room.roomname;
+    this.field_rightclick(coordinate);
+  }
 
-    if(fieldValue !== 0 && fieldValue !== 10){
-      return "clicked n" + fieldValue;
-    }
-    else if(fieldValue !== 10) { 
-      return "clicked";
+  getClass(field: Field){
+    if(field !== Field.BLOCK){
+      if(field === Field.FLAG){
+        return "n" + field.valueOf();
+      }
+      return "clicked n" + field.valueOf();
     }
     return "";
   }

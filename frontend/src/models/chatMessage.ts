@@ -3,4 +3,5 @@ export default class ChatMessage {
     message!: string;
     time!: Date;
     roomname!: string; 
+    system: boolean = false;
 }

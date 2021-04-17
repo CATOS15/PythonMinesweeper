@@ -31,7 +31,9 @@ rooms: {
             "newGame": False
             "width", 3,
             "height": 4,
-            "numberOfMines": 3
+            "mines": 3,
+            "fieldsLeft", 1,
+            "state": 0
         }
 	},
 	"room2": {
@@ -56,7 +58,9 @@ rooms: {
             "newGame": False
             "width", 3,
             "height": 4,
-            "numberOfMines": 3
+            "mines": 3,
+            "fieldsLeft", 1,
+            "state": 0
         }
 	}
 }
@@ -77,7 +81,7 @@ def sendmessage(jsondata):
     data_chatmessage = json.loads(jsondata)
     users = getUsersInRoom(data_chatmessage["roomname"])
     if(not request.sid in users):
-        print("Brugeren er ikke i rummet! " + str(request.sid))
+        print("Brugeren (" + str(request.sid) + ") er ikke i rummet " + data_chatmessage["roomname"])
         return
         
     socketio.emit("emitMessage", json.dumps(data_chatmessage), room=data_chatmessage["roomname"])
@@ -92,21 +96,34 @@ def leftClick(jsondata):
     data_coordinate = json.loads(jsondata)
     users = getUsersInRoom(data_coordinate["roomname"])
     if(not request.sid in users):
-        print("Brugeren er ikke i rummet! " + str(request.sid))
+        print("Brugeren (" + str(request.sid) + ") er ikke i rummet " + data_coordinate["roomname"])
         return
 
     gameboard = rooms[data_coordinate["roomname"]]["gameboard"]
     fields = gameboard.leftClick([], data_coordinate["x"], data_coordinate["y"])
 
-    socketio.emit("emitLeftClick", json.dumps(fields), room=data_coordinate["roomname"])
+    socketio.emit("emitClick", json.dumps(fields), room=data_coordinate["roomname"])
+    socketio.emit("emitGamestate", gameboard.state.value, room=data_coordinate["roomname"])
 
+@socketio.on("rightClick")
+def rightClick(jsondata):
+    data_coordinate = json.loads(jsondata)
+    users = getUsersInRoom(data_coordinate["roomname"])
+    if(not request.sid in users):
+        print("Brugeren (" + str(request.sid) + ") er ikke i rummet " + data_coordinate["roomname"])
+        return
+
+    gameboard = rooms[data_coordinate["roomname"]]["gameboard"]
+    fields = gameboard.rightClick(data_coordinate["x"], data_coordinate["y"])
+
+    socketio.emit("emitClick", json.dumps(fields), room=data_coordinate["roomname"])
 
 @socketio.on("refreshUsersConnected")
 def refreshUsersConnected(jsondata):
     data_user = json.loads(jsondata)
     users = getUsersInRoom(data_user["room"]["roomname"])
     if(not request.sid in users):
-        print("Brugeren er ikke i rummet! " + str(request.sid))
+        print("Brugeren (" + str(request.sid) + ") er ikke i rummet " + data_user["room"]["roomname"])
         return
 
     return emitUsersConnected(data_user["room"]["roomname"])
@@ -116,12 +133,13 @@ def getshownfields(jsondata):
     data_user = json.loads(jsondata)
     users = getUsersInRoom(data_user["room"]["roomname"])
     if(not request.sid in users):
-        print("Brugeren er ikke i rummet! " + str(request.sid))
+        print("Brugeren (" + str(request.sid) + ") er ikke i rummet " + data_user["room"]["roomname"])
         return
 
     gameboard = rooms[data_user["room"]["roomname"]]["gameboard"]
     fields = gameboard.getShownFields()
 
+    socketio.emit("emitGamestate", gameboard.state.value, room=data_user["room"]["roomname"])
     return HTTPResponse(json.dumps(fields),True).toJSON()
 
 @socketio.on("joinroom")
@@ -197,30 +215,30 @@ def emitUsersConnected(roomname):
     return usernames
 
 def getUsersInRoom(roomname):
-    room = rooms[roomname]
-    if not room is None:
-        return rooms[roomname]["users"]
-    return {}
+    if(not roomname in rooms):
+        print("Intet rum med id: " + roomname)
+        return {}
+    return rooms[roomname]["users"]
 
 
 def getNewGameboard(difficulty):
-    numberOfMines = 0
+    mines = 0
     width = 0
     height = 0
 
     if difficulty == 0:
-        numberOfMines = 10
+        mines = 10
         width = 10
         height = 8
     elif difficulty == 1:
-        numberOfMines = 40
+        mines = 40
         width = 14
         height = 18
     elif difficulty == 2:
-        numberOfMines = 99
+        mines = 99
         width = 24
         height = 20
-    return GameBoard(width,height,numberOfMines)
+    return GameBoard(width,height,mines)
 
 
 

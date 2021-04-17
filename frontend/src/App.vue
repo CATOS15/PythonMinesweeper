@@ -28,7 +28,7 @@ export default class App extends Vue {
   margin:0;
   padding:0;
   font-family: Montserrat;
-  color: #BABABA;
+  color: #d6d6d6;
   letter-spacing: 0.2px;
 }
 
@@ -49,7 +49,7 @@ input{
   min-width: 100px;
   margin: 5px 0;
   color: white;
-  background: #bababa;
+  background: #00000090;
   border: none;
 }
 
@@ -66,7 +66,7 @@ button:not(:last-child){
 }
 button:disabled{
   opacity: 0.65;
-  color: #bababa;
+  color: #d6d6d6;
 }
 input:focus, button:focus{
   outline: none;
@@ -93,22 +93,27 @@ input:focus, button:focus{
   background-color: #112c49;
 }
 
-/* width */
+.unselectable {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.unclickable {
+  pointer-events: none;
+}
+
 ::-webkit-scrollbar {
   width: 10px;
 }
-
-/* Track */
 ::-webkit-scrollbar-track {
   background: #f1f1f1; 
 }
- 
-/* Handle */
 ::-webkit-scrollbar-thumb {
   background: #888; 
 }
-
-/* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: #555; 
 }
