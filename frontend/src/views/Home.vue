@@ -5,7 +5,7 @@
     </div>
     <div class="fieldset">
       <div>
-        <input v-model="currentUser.name" type="text" placeholder="Navn"/>
+        <input v-model="currentUser.name" type="text" placeholder="Navn" @keyup.enter="nagivateEnter()"/>
       </div>
       <div v-if="state === HomeStateEnum.CREATE">
         <div class="buttons mt-2">
@@ -15,7 +15,7 @@
         </div>
       </div>
       <div v-if="state === HomeStateEnum.JOIN" class="mt-1">
-        <input class="mt-2" v-model="currentUser.room.roomname" type="text" placeholder="Rum nummer" />
+        <input class="mt-2" v-model="currentUser.room.roomname" type="text" placeholder="Rum nummer" @keyup.enter="nagivateEnter()" />
       </div>
 
 
@@ -105,6 +105,20 @@ export default class Home extends Vue {
     }
   }
 
+  nagivateEnter(){
+    switch(this.state){
+      case HomeStateEnum.DEFAULT:
+        this.navigate(HomeStateEnum.JOIN);
+        break;
+      case HomeStateEnum.CREATE:
+        this.socketcreate();
+        break;
+      case HomeStateEnum.JOIN:
+        this.socketjoin();
+        break;
+    }
+  }
+
   validate(){
     if(this.currentUser.name.length < 3){
       this.msg = "Navnet skal være 3 karakterer eller længere";
@@ -120,6 +134,7 @@ export default class Home extends Vue {
   socketcreate(){
     //TEMP INDTIL BACKEND GENERER RUM ID'ER
     this.currentUser.room.roomname = (Math.floor(Math.random() * 8999) + 1000).toString();
+    this.currentUser.room.difficulty = this.difficulty;
 
     if(!this.validate()) {
       return;

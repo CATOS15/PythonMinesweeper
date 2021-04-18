@@ -18,7 +18,7 @@
               Tid: 157
             </div>
           </div>
-          <div class="gamegrid" :class="{'unclickable': gamestate != GameState.ACTIVE}">
+          <div class="gamegrid" ref="gamegridHTML">
             <div v-for="(x,x_index) in grid" :key="x_index" class="gamerow">
               <div v-for="(y,y_index) in x" :key="y_index">
                 <div class="field" 
@@ -29,11 +29,12 @@
                   :class="getClass(grid[x_index][y_index].field)">
                 </div>
               </div>
-            </div>
+            </div>  
+            <GameCursor :usernames="usernames" :gamegridHTML="gamegridHTML" v-if="contentReady" />
           </div>
         </div>
-        <div class="chat" v-if="initChat">
-          <Chat :gamestate="gamestate" />
+        <div class="chat" v-if="contentReady">
+          <Chat :usernames="usernames" :gamestate="gamestate" />
         </div>
       </div>
   </div>
@@ -48,14 +49,19 @@ import router from '@/router';
 import User from '@/models/user';
 import Coordinate from '@/models/coordinate';
 import { Field, GameState } from '@/models/enums';
+import GameCursor from '@/components/GameCursor.vue';
 
 
 @Component({
   components: {
-    Chat
+    Chat,
+    GameCursor
   },
 })
 export default class Game extends Vue {
+  @Getter('GET_CURRENT_USER')
+  currentUser!: User;
+
   @Action("ROOM_LEAVE")
   leaveRoom!: () => Promise<null>;
 
@@ -64,6 +70,9 @@ export default class Game extends Vue {
 
   @Action("ROOM_LISTEN_GAMESTATE")
   room_listengamestate!: (callback: (gamestate: GameState) => void) => Promise<null>;
+
+  @Action("ROOM_LISTEN_USERSCONNECTED")
+  room_listenUserConnected!: (callback: (usernames: string[]) => void) => Promise<null>;
 
   @Action("FIELD_LEFTCLICK")
   field_leftclick!: (coordinate: Coordinate) => Promise<null>;
@@ -77,19 +86,19 @@ export default class Game extends Vue {
   @Action("FIELD_LISTEN_CLICK")
   field_listenclick!: (callback: (grid: Coordinate[]) => void) => Promise<null>;
 
-  @Getter('GET_CURRENT_USER')
-  currentUser!: User;
-
   Field = Field;
   GameState = GameState;
-  initChat: boolean = false;
+  contentReady: boolean = false;
   grid: GameBlock[][] = [];  
   gamestate: GameState = GameState.ACTIVE;
+  usernames: String[] = [];
   
   mouseRightDown = false;
   mouseLeftDown = false;
 
-  created(){
+  gamegridHTML!: HTMLElement;
+
+  mounted(){
     if(!(this.currentUser && this.currentUser.room && this.currentUser.name && this.currentUser.room.roomname && this.currentUser.room.difficulty && this.currentUser.room.width && this.currentUser.room.height)){
         router.replace("/");
         return;
@@ -100,7 +109,6 @@ export default class Game extends Vue {
           this.grid[x][y] = new GameBlock();
       }
     }
-    this.initChat = true;
     
     this.room_getShownFields(this.currentUser).then((coordinates: Coordinate[]) => {
       for(let i = 0;i<coordinates.length;i++){
@@ -123,6 +131,14 @@ export default class Game extends Vue {
         Vue.set(this.grid, gameblock.x, row);
       }
     });
+
+    this.room_listenUserConnected((usernames: string[]) => {
+      this.usernames = usernames;
+    });
+
+    this.gamegridHTML = this.$refs.gamegridHTML as HTMLElement;
+
+    this.contentReady = true;
   }
 
   socketleave(){
@@ -229,14 +245,16 @@ export default class Game extends Vue {
 }
 
 .game{
-  height:700px;
+  height:730px;
 }
 
 .gamegrid{
-  width:700px;
+  position: relative;
+  width:820px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  overflow:hidden;
 }
 .gamerow{
   display: flex;
@@ -265,7 +283,7 @@ export default class Game extends Vue {
 }
 
 .chat{
-  height:700px;
+  height:730px;
   width:340px;
 }
 
@@ -300,7 +318,6 @@ export default class Game extends Vue {
 .field.n12{
   background-image: url(../../src/assets/images/12.svg);
 }
-
 
 /*
 

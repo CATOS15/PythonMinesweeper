@@ -40,9 +40,6 @@ export default class Chat extends Vue {
   @Action("ROOM_REFRESH_USERSCONNECTED")
   room_refreshUsersConnected!: (user: User) => Promise<SocketResponse>;
 
-  @Action("ROOM_LISTEN_USERSCONNECTED")
-  room_listenUserConnected!: (callback: (usernames: string[]) => void) => Promise<null>;
-
   @Action("CHAT_SENDMESSAGE")
   chat_sendMessage!: (chatMessage: ChatMessage) => Promise<string>;
 
@@ -51,9 +48,11 @@ export default class Chat extends Vue {
 
   @Prop({required: true})
   gamestate!: GameState;
+  
+  @Prop({required: true})
+  usernames!: String[];
 
   message: string = '';
-  usernames: String[] = [];
   chatmessages: ChatMessage[] = [];
 
   @Watch('gamestate')
@@ -82,9 +81,6 @@ export default class Chat extends Vue {
     this.chat_listenMessage((chatMessage: ChatMessage) => {
       this.chatmessages.push(chatMessage);
       this.message = '';
-    });
-    this.room_listenUserConnected((usernames: string[]) => {
-      this.usernames = usernames;
     });
     this.room_refreshUsersConnected(this.currentUser);
   }
@@ -138,7 +134,7 @@ export default class Chat extends Vue {
 }
 
 .playercircle.active{
-  background-color:red;
+  background-color:green;
 }
 
 .playercircle:nth-of-type(even) {

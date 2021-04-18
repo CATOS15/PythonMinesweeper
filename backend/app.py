@@ -38,33 +38,7 @@ rooms: {
             "state": 0
         }
 	},
-	"room2": {
-        "users": {
-            "sid1": "brian",
-            "sid2": "christian",
-            "sid3": "tobias"
-        }
-        "gameboard": {
-            "hidden" = [
-                [FieldValue.BLANK][FieldValue.TWO]  [FieldValue.MINE]
-                [FieldValue.BLANK][FieldValue.THREE][FieldValue.MINE]
-                [FieldValue.BLANK][FieldValue.TWO]  [FieldValue.MINE]
-                [FieldValue.BLANK][FieldValue.ONE]  [FieldValue.ONE]
-            ],
-            "shown" = [
-                [FieldValue.BLANK][FieldValue.TWO]  [FieldValue.HIDDEN]
-                [FieldValue.BLANK][FieldValue.THREE][FieldValue.HIDDEN]
-                [FieldValue.BLANK][FieldValue.TWO]  [FieldValue.HIDDEN]
-                [FieldValue.BLANK][FieldValue.ONE]  [FieldValue.HIDDEN]
-            ],
-            "newGame": False
-            "width", 3,
-            "height": 4,
-            "mines": 3,
-            "fieldsLeft", 1,
-            "state": 0
-        }
-	}
+    "room2": {osv.....}
 }
 
 """
@@ -77,6 +51,16 @@ class HTTPResponse:
 
     def toJSON (self):
         return json.dumps(self.__dict__)
+
+@socketio.on("sendusercursor")
+def sendusercursor(jsondata):
+    data_usercursor = json.loads(jsondata)
+    users = getUsersInRoom(data_usercursor["roomname"])
+    if(not request.sid in users):
+        print("Brugeren (" + str(request.sid) + ") er ikke i rummet " + data_usercursor["roomname"])
+        return
+        
+    socketio.emit("emitUserCursor", json.dumps(data_usercursor), room=data_usercursor["roomname"])
 
 @socketio.on("sendmessage")
 def sendmessage(jsondata):
@@ -167,6 +151,11 @@ def joinroom(jsondata):
     if(not data_user["room"]["roomname"] in rooms):
         return HTTPResponse("Rum findes ikke!",False).toJSON()
 
+    for key in rooms[data_user["room"]["roomname"]]["users"]:
+        name = rooms[data_user["room"]["roomname"]]["users"][key]
+        if data_user["name"] == name:
+            return HTTPResponse("En bruger med det navn findes allerede!",False).toJSON()
+
     rooms[data_user["room"]["roomname"]]["users"][request.sid] = data_user["name"]
     join_room(data_user["room"]["roomname"])
 
@@ -241,22 +230,19 @@ def getNewGameboard(difficulty):
     width = 0
     height = 0
 
-    if difficulty == 0:
+    if difficulty == 1:
         mines = 10
-        width = 10
-        height = 8
-    elif difficulty == 1:
+        width = 8
+        height = 10
+    elif difficulty == 2:
         mines = 40
         width = 14
         height = 18
-    elif difficulty == 2:
+    elif difficulty == 3:
         mines = 99
-        width = 24
-        height = 20
+        width = 20
+        height = 24
     return GameBoard(width,height,mines)
-
-
-
 
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5005, debug=True)

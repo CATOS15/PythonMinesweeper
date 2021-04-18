@@ -2,7 +2,7 @@ import ChatMessage from '@/models/chatMessage'
 import Coordinate from '@/models/coordinate'
 import { GameState } from '@/models/enums'
 import SocketResponse from '@/models/socketResponse'
-import User from '@/models/user'
+import User, { UserCursor } from '@/models/user'
 import { io, Socket, SocketOptions } from 'socket.io-client'
 import Vue from 'vue'
 import Vuex, { StoreOptions } from 'vuex'
@@ -138,7 +138,20 @@ const storeOptions: StoreOptions<SocketState> = {
         const chatMessage = JSON.parse(resp) as ChatMessage;
         callback(chatMessage);
       });
-    }
+    },
+    CURSOR_SEND_USERCURSOR(state, userCursor: UserCursor){
+      return new Promise((resolve) => {
+        socket.emit("sendusercursor", JSON.stringify(userCursor), () => {
+          resolve(null);
+        });
+      });
+    },
+    CURSOR_LISTEN_USERCURSOR(state, callback: (userCursors: UserCursor) => void){
+      socket.on("emitUserCursor", (resp: string) => {
+        const userCursor = JSON.parse(resp) as UserCursor;
+        callback(userCursor);
+      });
+    },
   },
   mutations: {
     SET_CURRENT_USER(state, user: User){
