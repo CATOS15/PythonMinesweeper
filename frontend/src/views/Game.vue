@@ -22,10 +22,8 @@
             <div v-for="(x,x_index) in grid" :key="x_index" class="gamerow">
               <div v-for="(y,y_index) in x" :key="y_index">
                 <div class="field" 
-                  @click.left="fieldLeftClick(x_index, y_index)" 
-                  @click.right="fieldRightClick(x_index, y_index)"
                   @mousedown="fieldMousedown($event, x_index, y_index)"
-                  @mouseup="fieldMouseup($event)"
+                  @mouseup="fieldMouseup($event, x_index, y_index)"
                   :class="getClass(grid[x_index][y_index].field)">
                 </div>
               </div>
@@ -147,45 +145,41 @@ export default class Game extends Vue {
     });
   }
 
-  fieldLeftClick(x: number, y: number){
-    const coordinate = new Coordinate();
-    coordinate.x = x;
-    coordinate.y = y;
-    coordinate.roomname = this.currentUser.room.roomname;
-    this.field_leftclick(coordinate);
-  }
-
-  fieldRightClick(x: number, y: number){
-    const coordinate = new Coordinate();
-    coordinate.x = x;
-    coordinate.y = y;
-    coordinate.roomname = this.currentUser.room.roomname;
-    this.field_rightclick(coordinate);
-  }
-
   fieldMousedown(event: MouseEvent, x: number, y: number){
+    const coordinate = new Coordinate();
+    coordinate.x = x;
+    coordinate.y = y;
+    coordinate.roomname = this.currentUser.room.roomname;
+
     if(event.button === 0){
       this.mouseLeftDown = true;
     }
     if(event.button === 2){
       this.mouseRightDown = true;
     }
-    if(this.mouseLeftDown && this.mouseRightDown){
-      const coordinate = new Coordinate();
-      coordinate.x = x;
-      coordinate.y = y;
-      coordinate.roomname = this.currentUser.room.roomname;
-      this.field_rightleftclick(coordinate);
-      this.mouseLeftDown = false;
-      this.mouseRightDown = false;
+    if(this.mouseRightDown && !this.mouseLeftDown){
+      this.field_rightclick(coordinate);
     }
   }
-  fieldMouseup(event: MouseEvent){
-    if(event.button === 0){
+  fieldMouseup(event: MouseEvent, x: number, y: number){
+    const coordinate = new Coordinate();
+    coordinate.x = x;
+    coordinate.y = y;
+    coordinate.roomname = this.currentUser.room.roomname;
+
+    if(this.mouseLeftDown && this.mouseRightDown){
       this.mouseLeftDown = false;
-    }
-    if(event.button === 2){
       this.mouseRightDown = false;
+      this.field_rightleftclick(coordinate);
+    }
+    else{
+      if(event.button === 0){
+        this.mouseLeftDown = false;
+        this.field_leftclick(coordinate);
+      }
+      if(event.button === 2){
+        this.mouseRightDown = false;
+      }
     }
   }
 
