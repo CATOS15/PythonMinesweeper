@@ -24,6 +24,8 @@
                 <div class="field" 
                   @click.left="fieldLeftClick(x_index, y_index)" 
                   @click.right="fieldRightClick(x_index, y_index)"
+                  @mousedown="fieldMousedown($event, x_index, y_index)"
+                  @mouseup="fieldMouseup($event)"
                   :class="getClass(grid[x_index][y_index].field)">
                 </div>
               </div>
@@ -69,6 +71,9 @@ export default class Game extends Vue {
   @Action("FIELD_RIGHTCLICK")
   field_rightclick!: (coordinate: Coordinate) => Promise<null>;
 
+  @Action("FIELD_RIGHTLEFTCLICK")
+  field_rightleftclick!: (coordinate: Coordinate) => Promise<null>;
+
   @Action("FIELD_LISTEN_CLICK")
   field_listenclick!: (callback: (grid: Coordinate[]) => void) => Promise<null>;
 
@@ -80,6 +85,9 @@ export default class Game extends Vue {
   initChat: boolean = false;
   grid: GameBlock[][] = [];  
   gamestate: GameState = GameState.ACTIVE;
+  
+  mouseRightDown = false;
+  mouseLeftDown = false;
 
   created(){
     if(!(this.currentUser && this.currentUser.room && this.currentUser.name && this.currentUser.room.roomname && this.currentUser.room.difficulty && this.currentUser.room.width && this.currentUser.room.height)){
@@ -139,14 +147,41 @@ export default class Game extends Vue {
     this.field_rightclick(coordinate);
   }
 
-  getClass(field: Field){
-    if(field !== Field.BLOCK){
-      if(field === Field.FLAG){
-        return "n" + field.valueOf();
-      }
-      return "clicked n" + field.valueOf();
+  fieldMousedown(event: MouseEvent, x: number, y: number){
+    if(event.button === 0){
+      this.mouseLeftDown = true;
     }
-    return "";
+    if(event.button === 2){
+      this.mouseRightDown = true;
+    }
+    if(this.mouseLeftDown && this.mouseRightDown){
+      const coordinate = new Coordinate();
+      coordinate.x = x;
+      coordinate.y = y;
+      coordinate.roomname = this.currentUser.room.roomname;
+      this.field_rightleftclick(coordinate);
+      this.mouseLeftDown = false;
+      this.mouseRightDown = false;
+    }
+  }
+  fieldMouseup(event: MouseEvent){
+    if(event.button === 0){
+      this.mouseLeftDown = false;
+    }
+    if(event.button === 2){
+      this.mouseRightDown = false;
+    }
+  }
+
+  getClass(field: Field){
+    let fieldClass = "";
+    if(field !== Field.BLOCK){
+      if(field !== Field.FLAG){
+        fieldClass += " clicked";
+      }
+      fieldClass += " n" + field.valueOf();
+    }
+    return fieldClass;
   }
 }
 </script>
@@ -220,6 +255,9 @@ export default class Game extends Vue {
   background-repeat: no-repeat;
   background-position: center;
   background-size: 24px 24px;
+}
+.field:hover:not(.clicked){
+  background-color: #a4dcff;
 }
 .field.clicked{
   background-color: white;

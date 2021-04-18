@@ -99,6 +99,13 @@ const storeOptions: StoreOptions<SocketState> = {
         callback(gamestate);
       });
     },
+    FIELD_RIGHTLEFTCLICK(state, coordinate: Coordinate){
+      return new Promise((resolve) => {
+        socket.emit("rightleftClick", JSON.stringify(coordinate), () => {
+          resolve(null);
+        });
+      });
+    },
     FIELD_RIGHTCLICK(state, coordinate: Coordinate){
       return new Promise((resolve) => {
         socket.emit("rightClick", JSON.stringify(coordinate), () => {

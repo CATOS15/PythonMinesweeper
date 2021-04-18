@@ -119,6 +119,19 @@ def rightClick(jsondata):
     fields = gameboard.rightClick(data_coordinate["x"], data_coordinate["y"])
 
     socketio.emit("emitClick", json.dumps(fields), room=data_coordinate["roomname"])
+    
+@socketio.on("rightleftClick")
+def rightleftClick(jsondata):
+    data_coordinate = json.loads(jsondata)
+    users = getUsersInRoom(data_coordinate["roomname"])
+    if(not request.sid in users):
+        print("Brugeren (" + str(request.sid) + ") er ikke i rummet " + data_coordinate["roomname"])
+        return
+
+    gameboard = rooms[data_coordinate["roomname"]]["gameboard"]
+    fields = gameboard.rightleftClick(data_coordinate["x"], data_coordinate["y"])
+
+    socketio.emit("emitClick", json.dumps(fields), room=data_coordinate["roomname"])
 
 @socketio.on("refreshUsersConnected")
 def refreshUsersConnected(jsondata):

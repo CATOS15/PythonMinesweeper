@@ -1,7 +1,6 @@
 #coding=utf-8
 
 from enum import Enum
-import math
 from random import randrange,uniform,choice
 
 class FieldValue(Enum):
@@ -58,6 +57,37 @@ class GameBoard:
                 fields.append({'x':x,'y':y,'field':fieldValue.value})
         return fields
 
+    def getShownField(self, x, y):
+        if x < 0 or y < 0 or x >= self.width or y >= self.height:
+            return None
+        return self.shown[x][y]
+
+    def getNumberOfFlagsFromOffset(self, x, y):
+        counter = 0
+        for i in range(-1, 2):
+            for j in range(-1, 2):
+                if self.getShownField(x+i,y+j) == FieldValue.FLAG:
+                    counter += 1
+        return counter
+
+    def rightleftClick(self,x,y):
+        if x < 0 or y < 0 or x >= self.width or y >= self.height or self.state != GameState.ACTIVE or self.shown[x][y].value < 1 or self.shown[x][y].value > 8:
+            return [{'x':x,'y':y,'field':self.shown[x][y].value}]
+
+        fields = [{'x':x,'y':y,'field':self.shown[x][y].value}]
+        numberOfFlags = self.getNumberOfFlagsFromOffset(x, y)
+        if(numberOfFlags == self.shown[x][y].value):
+            fields = self.leftClick(fields,x,y+1)
+            fields = self.leftClick(fields,x,y-1)
+            fields = self.leftClick(fields,x+1,y)
+            fields = self.leftClick(fields,x+1,y+1)
+            fields = self.leftClick(fields,x+1,y-1)
+            fields = self.leftClick(fields,x-1,y)
+            fields = self.leftClick(fields,x-1,y+1)
+            fields = self.leftClick(fields,x-1,y-1)
+
+        return fields
+
     def rightClick(self,x,y):
         if x < 0 or y < 0 or x >= self.width or y >= self.height or self.state != GameState.ACTIVE:
             return [{'x':x,'y':y,'field':self.shown[x][y].value}]
@@ -91,11 +121,9 @@ class GameBoard:
         if self.hidden[x][y] == FieldValue.ZERO:
             fields = self.leftClick(fields,x,y+1)
             fields = self.leftClick(fields,x,y-1)
-            
             fields = self.leftClick(fields,x+1,y)
             fields = self.leftClick(fields,x+1,y+1)
             fields = self.leftClick(fields,x+1,y-1)
-
             fields = self.leftClick(fields,x-1,y)
             fields = self.leftClick(fields,x-1,y+1)
             fields = self.leftClick(fields,x-1,y-1)
