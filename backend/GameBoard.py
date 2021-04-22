@@ -19,9 +19,10 @@ class FieldValue(Enum):
     EIGHT = 8
 
 class GameState(Enum):
-    ACTIVE = 0
-    LOST = 1
-    WON = 2
+    READY = 0
+    ACTIVE = 1
+    LOST = 2
+    WON = 3
 
 class GameBoard:
     width = 0
@@ -31,7 +32,7 @@ class GameBoard:
     shown = []
     hidden = []
     newGame = True
-    state = GameState.ACTIVE
+    state = GameState.READY
 
     def __init__(self,width,height,mines):
         if(mines > width * height - 9):
@@ -71,6 +72,9 @@ class GameBoard:
         return counter
 
     def rightleftClick(self,x,y):
+        if self.state == GameState.READY:
+            self.state = GameState.ACTIVE
+
         if x < 0 or y < 0 or x >= self.width or y >= self.height or self.state != GameState.ACTIVE or self.shown[x][y].value < 1 or self.shown[x][y].value > 8:
             return [{'x':x,'y':y,'field':self.shown[x][y].value}]
 
@@ -89,6 +93,9 @@ class GameBoard:
         return fields
 
     def rightClick(self,x,y):
+        if self.state == GameState.READY:
+            self.state = GameState.ACTIVE
+
         if x < 0 or y < 0 or x >= self.width or y >= self.height or self.state != GameState.ACTIVE:
             return [{'x':x,'y':y,'field':self.shown[x][y].value}]
 
@@ -100,6 +107,9 @@ class GameBoard:
         return [{'x':x,'y':y,'field':self.shown[x][y].value}]
 
     def leftClick(self,fields,x,y):
+        if self.state == GameState.READY:
+            self.state = GameState.ACTIVE
+            
         if (x < 0 or y < 0 or x >= self.width or y >= self.height 
             or self.hidden[x][y] == self.shown[x][y]
             or self.shown[x][y] == FieldValue.FLAG

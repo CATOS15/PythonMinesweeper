@@ -12,10 +12,10 @@
         <div class="game">
           <div class="gameinfo h2">
             <div>
-              Flag: 14
+              <div class="flag"></div>{{flags}}
             </div>
             <div>
-              Tid: 157
+              <div class="stopwatch"></div>{{timer}}
             </div>
           </div>
           <div class="gamegrid" ref="gamegridHTML">
@@ -95,6 +95,11 @@ export default class Game extends Vue {
   mouseLeftDown = false;
 
   gamegridHTML!: HTMLElement;
+  
+  flags: number = 0;
+  interval!: number;
+  timer: number = 0;
+
 
   mounted(){
     if(!(this.currentUser && this.currentUser.room && this.currentUser.name && this.currentUser.room.roomname && this.currentUser.room.difficulty && this.currentUser.room.width && this.currentUser.room.height)){
@@ -107,6 +112,7 @@ export default class Game extends Vue {
           this.grid[x][y] = new GameBlock();
       }
     }
+    this.flags = this.currentUser.room.totalMines;
     
     this.room_getShownFields(this.currentUser).then((coordinates: Coordinate[]) => {
       for(let i = 0;i<coordinates.length;i++){
@@ -119,14 +125,24 @@ export default class Game extends Vue {
 
     this.room_listengamestate((gamestate: GameState) => {
       this.gamestate = gamestate;
+      if(this.gamestate === GameState.WON || this.gamestate === GameState.LOST)
+        this.stopTimer();
     });
 
     this.field_listenclick((coordinates: Coordinate[]) => {
       for(let i = 0;i<coordinates.length;i++){
         const gameblock = coordinates[i];
         const row = this.grid[gameblock.x];
+
+        if(row[gameblock.y].field !== Field.FLAG && gameblock.field === Field.FLAG){
+          this.flags--;
+        }else if(row[gameblock.y].field === Field.FLAG && gameblock.field !== Field.FLAG){
+          this.flags++;
+        }
+
         row[gameblock.y].field = gameblock.field;
         Vue.set(this.grid, gameblock.x, row);
+
       }
     });
 
@@ -145,7 +161,26 @@ export default class Game extends Vue {
     });
   }
 
+  startTimer(){
+    if(this.gamestate !== GameState.READY){
+      return;
+    }
+    this.timer = 0;
+    this.interval = setInterval(() => {
+      this.timer++;
+    }, 1000);
+  }
+  stopTimer(){
+    if(!this.interval){
+      console.error("Intet interval objekt sat!");
+      return;
+    }
+    clearInterval(this.interval);
+  }
+
   fieldMousedown(event: MouseEvent, x: number, y: number){
+    this.startTimer();
+
     const coordinate = new Coordinate();
     coordinate.x = x;
     coordinate.y = y;
@@ -228,7 +263,25 @@ export default class Game extends Vue {
 }
 
 .gameinfo > div{
-  padding:0 8px
+  padding:0 8px;
+  display: flex;
+  align-items: center;
+}
+
+.gameinfo > div .flag{
+  background-image: url(../../src/assets/images/11.svg);
+  float:left;
+  width:24px;
+  height:24px;
+  margin-right:5px;
+}
+.gameinfo > div .stopwatch{
+  background-image: url(../../src/assets/images/stopwatch.svg);
+  background-size: cover;
+  float:left;
+  width:24px;
+  height:24px;
+  margin-right:5px;
 }
 
 .gamechatcontainer{

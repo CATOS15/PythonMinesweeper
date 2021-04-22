@@ -103,6 +103,7 @@ def rightClick(jsondata):
     fields = gameboard.rightClick(data_coordinate["x"], data_coordinate["y"])
 
     socketio.emit("emitClick", json.dumps(fields), room=data_coordinate["roomname"])
+    socketio.emit("emitGamestate", gameboard.state.value, room=data_coordinate["roomname"])
     
 @socketio.on("rightleftClick")
 def rightleftClick(jsondata):
@@ -116,6 +117,7 @@ def rightleftClick(jsondata):
     fields = gameboard.rightleftClick(data_coordinate["x"], data_coordinate["y"])
 
     socketio.emit("emitClick", json.dumps(fields), room=data_coordinate["roomname"])
+    socketio.emit("emitGamestate", gameboard.state.value, room=data_coordinate["roomname"])
 
 @socketio.on("refreshUsersConnected")
 def refreshUsersConnected(jsondata):
@@ -186,7 +188,7 @@ def createroom(jsondata):
     gameboard = getNewGameboard(data_user["room"]["difficulty"])
     rooms[data_user["room"]["roomname"]]["gameboard"] = gameboard
 
-    response = {'width':gameboard.width,'height':gameboard.height}
+    response = {'width':gameboard.width,'height':gameboard.height, 'totalMines': gameboard.mines}
     return HTTPResponse(json.dumps(response),True).toJSON()
 
 @socketio.on("leaveroom")

@@ -42,6 +42,7 @@ const storeOptions: StoreOptions<SocketState> = {
             const size = JSON.parse(socketResponse.msg);
             user.room.height = size.height;
             user.room.width = size.width;
+            user.room.totalMines = size.totalMines;
             this.commit("SET_CURRENT_USER", user);
           }
           resolve(socketResponse);
