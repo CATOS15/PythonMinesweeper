@@ -15,7 +15,7 @@
               <div class="flag"></div>{{flags}}
             </div>
             <div>
-              <div class="stopwatch"></div>{{timer}}
+              {{timer}}<div class="stopwatch"></div>
             </div>
           </div>
           <div class="gamegrid" ref="gamegridHTML">
@@ -66,6 +66,9 @@ export default class Game extends Vue {
   @Action("ROOM_GET_SHOWN_FIELDS")
   room_getShownFields!: (user: User) => Promise<Coordinate[]>;
 
+  @Action("ROOM_GET_TIME")
+  room_getTime!: (user: User) => Promise<number>;
+
   @Action("ROOM_LISTEN_GAMESTATE")
   room_listengamestate!: (callback: (gamestate: GameState) => void) => Promise<null>;
 
@@ -114,6 +117,10 @@ export default class Game extends Vue {
     }
     this.flags = this.currentUser.room.flags;
     this.timer = this.currentUser.room.timer;
+    this.gamestate = this.currentUser.room.gamestate;
+    if(this.gamestate === GameState.ACTIVE){
+      this.startTimer();
+    }
     
     this.room_getShownFields(this.currentUser).then((coordinates: Coordinate[]) => {
       for(let i = 0;i<coordinates.length;i++){
@@ -125,9 +132,17 @@ export default class Game extends Vue {
     });
 
     this.room_listengamestate((gamestate: GameState) => {
+      if(this.gamestate === GameState.READY && gamestate === GameState.ACTIVE){
+        this.startTimer();
+      }
+
       this.gamestate = gamestate;
-      if(this.gamestate === GameState.WON || this.gamestate === GameState.LOST)
+      if(this.gamestate === GameState.WON || this.gamestate === GameState.LOST){
         this.stopTimer();
+        this.room_getTime(this.currentUser).then((timer: number) => {
+          this.timer = timer;
+        });
+      }
     });
 
     this.field_listenclick((coordinates: Coordinate[]) => {
@@ -135,9 +150,9 @@ export default class Game extends Vue {
         const gameblock = coordinates[i];
         const row = this.grid[gameblock.x];
 
-        if(row[gameblock.y].field !== Field.FLAG && gameblock.field === Field.FLAG){
+        if(row[gameblock.y].field === Field.BLOCK && gameblock.field === Field.FLAG){
           this.flags--;
-        }else if(row[gameblock.y].field === Field.FLAG && gameblock.field !== Field.FLAG){
+        }else if(row[gameblock.y].field === Field.FLAG && gameblock.field === Field.BLOCK){
           this.flags++;
         }
 
@@ -163,10 +178,6 @@ export default class Game extends Vue {
   }
 
   startTimer(){
-    if(this.gamestate !== GameState.READY){
-      return;
-    }
-    this.timer = 0;
     this.interval = setInterval(() => {
       this.timer++;
     }, 1000);
@@ -180,7 +191,10 @@ export default class Game extends Vue {
   }
 
   fieldMousedown(event: MouseEvent, x: number, y: number){
-    this.startTimer();
+    if(this.gamestate === GameState.READY){
+      this.startTimer();
+      this.gamestate = GameState.ACTIVE;
+    }
 
     const coordinate = new Coordinate();
     coordinate.x = x;
@@ -282,7 +296,7 @@ export default class Game extends Vue {
   float:left;
   width:24px;
   height:24px;
-  margin-right:5px;
+  margin-left:5px;
 }
 
 .gamechatcontainer{
