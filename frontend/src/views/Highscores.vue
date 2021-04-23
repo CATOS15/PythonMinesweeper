@@ -83,30 +83,80 @@ export default class Highscores extends Vue{
 }
 
 .highscore_container{
-    border-radius:10px;
+    width:auto;
 }
 
 .styled-table {
-    border-collapse: collapse;
-    margin: 25px 0;
+    min-width: 800px;
+    width: 800px;
+    max-width: 800px;
     font-size: 0.9em;
-    font-family: sans-serif;
-    min-width: 300px;
-    max-width:800px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-    border-radius: 10px;
-    -moz-border-radius:10px;
+    display:block;
+    table-layout: fixed;
+    border-collapse: collapse;
+    margin:auto;
+}
+
+/* fiks at der kan være en scrollbar, pølse*/
+.styled-table thead{
+    position: relative;
+    display: block;
+}
+
+.styled-table tbody{
+    display:block;
+    overflow-y:scroll;
+    overflow-x:hidden;
+    height:200px;
+    border-radius:0px 0px 0px 10px;
+}
+
+/* gud = https://www.tjvantoll.com/2012/11/10/creating-cross-browser-scrollable-tbody/ */
+.styled-table td:nth-child(1), .styled-table th:nth-child(1) { min-width: 410px; }
+.styled-table td:nth-child(2), .styled-table th:nth-child(2) { min-width: 130px; }
+.styled-table td:nth-child(3), .styled-table th:nth-child(3) { min-width: 150px; }
+.styled-table td:nth-child(4), .styled-table th:nth-child(4) { width: 300px; }
+
+/* scrollbar styling (om den skal være rund eller firkantet) */
+::-webkit-scrollbar {
+    border-radius: 0 0 100px 0;
+    height: 18px;
+    width:10px;
+    background-color: white;
+    
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0);
+    border-radius: 0 0 10px 0;
+    margin-top:2px;
+    margin-bottom:5px;
+    margin-right:10px;
+    padding-right:10px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-right: 3px solid rgba(0, 0, 0, 0);
+    border-left: 3px solid rgba(0, 0, 0, 0);
+    background-clip: padding-box;
+    background-color: rgba(0, 0, 0, 0.45);
+    border-radius:100px;
+}
+
+::-webkit-scrollbar-corner {
+    background-color: transparent;
+}
+
+/* colors and distinction between rows*/
+.styled-table th,
+.styled-table td {
+    padding: 12px 15px;
 }
 
 .styled-table thead tr {
     background-color: #0f80a4;
     color: #ffffff;
     text-align: left;
-}
-
-.styled-table th,
-.styled-table td {
-    padding: 12px 15px;
 }
 
 .styled-table th{
@@ -144,26 +194,7 @@ tr:last-of-type td:first-of-type {
   border-bottom-left-radius: 10px;
 }
 tr:last-of-type td:last-of-type {
-  border-bottom-right-radius: 10px;
+  /*border-bottom-right-radius: 10px;*/
 }
-
-/*
-table {
-  font-family: arial, sans-serif;
-  border-collapse: collapse;
-  width: 100%;
-}
-
-td, th {
-  border: 1px solid #dddddd;
-  text-align: left;
-  padding: 8px;
-}
-
-tr:nth-child(even) {
-}
-
-*/
-
 
 </style>
