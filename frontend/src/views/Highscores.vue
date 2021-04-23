@@ -111,8 +111,12 @@ export default class Highscores extends Vue{
     border-radius:0px 0px 0px 10px;
 }
 
+.styled-table td{
+    overflow:auto;
+}
+
 /* gud = https://www.tjvantoll.com/2012/11/10/creating-cross-browser-scrollable-tbody/ */
-.styled-table td:nth-child(1), .styled-table th:nth-child(1) { min-width: 410px; }
+.styled-table td:nth-child(1), .styled-table th:nth-child(1) { min-width: 410px; max-width:410px; }
 .styled-table td:nth-child(2), .styled-table th:nth-child(2) { min-width: 130px; }
 .styled-table td:nth-child(3), .styled-table th:nth-child(3) { min-width: 150px; }
 .styled-table td:nth-child(4), .styled-table th:nth-child(4) { width: 300px; }
@@ -123,7 +127,6 @@ export default class Highscores extends Vue{
     height: 18px;
     width:10px;
     background-color: white;
-    
 }
 
 ::-webkit-scrollbar-track {
@@ -131,7 +134,6 @@ export default class Highscores extends Vue{
     border-radius: 0 0 10px 0;
     margin-top:2px;
     margin-bottom:5px;
-    margin-right:10px;
     padding-right:10px;
 }
 
@@ -144,6 +146,29 @@ export default class Highscores extends Vue{
 }
 
 ::-webkit-scrollbar-corner {
+    background-color: transparent;
+}
+
+/* horizontal scrollbar if names to long */
+
+::-webkit-scrollbar:horizontal {
+    height: 1px;
+    background-color: white;
+}
+
+::-webkit-scrollbar-track:horizontal {
+    background: rgba(0, 0, 0, 0);
+    
+}
+
+::-webkit-scrollbar-thumb:horizontal {
+    background-clip: padding-box;
+    border-radius:100px;
+    border-right: 0px solid rgba(0, 0, 0, 0);
+    border-left: 0px solid rgba(0, 0, 0, 0);
+}
+
+::-webkit-scrollbar-corner:horizontal {
     background-color: transparent;
 }
 
