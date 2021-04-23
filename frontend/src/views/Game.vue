@@ -320,6 +320,7 @@ export default class Game extends Vue {
   background-repeat: no-repeat;
   background-position: center;
   background-size: 24px 24px;
+  box-shadow: 0px -1.5px 0px 0px #608eab inset;
 }
 .field:hover:not(.clicked){
   background-color: #a4dcff;
@@ -327,6 +328,7 @@ export default class Game extends Vue {
 .field.clicked{
   background-color: white;
   color: #87cefa;
+  box-shadow: 0px 0px 0px 0px #608eab inset;
 }
 
 .chat{
