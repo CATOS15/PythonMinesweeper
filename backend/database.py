@@ -10,7 +10,6 @@ class Database:
         )
         ## Global cursor
         self.cur = self.con.cursor()
-        print("Database forbundet")
 
     def get_highscores(self):
         self.cur.execute("SELECT * FROM Highscore")
