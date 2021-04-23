@@ -112,7 +112,8 @@ export default class Game extends Vue {
           this.grid[x][y] = new GameBlock();
       }
     }
-    this.flags = this.currentUser.room.totalMines;
+    this.flags = this.currentUser.room.flags;
+    this.timer = this.currentUser.room.timer;
     
     this.room_getShownFields(this.currentUser).then((coordinates: Coordinate[]) => {
       for(let i = 0;i<coordinates.length;i++){

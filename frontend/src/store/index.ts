@@ -1,8 +1,9 @@
 import ChatMessage from '@/models/chatMessage'
 import Coordinate from '@/models/coordinate'
 import { GameState } from '@/models/enums'
+import Highscore from '@/models/highscore'
 import SocketResponse from '@/models/socketResponse'
-import User, { UserCursor } from '@/models/user'
+import User, { Room, UserCursor } from '@/models/user'
 import { io, Socket, SocketOptions } from 'socket.io-client'
 import Vue from 'vue'
 import Vuex, { StoreOptions } from 'vuex'
@@ -34,15 +35,27 @@ const storeOptions: StoreOptions<SocketState> = {
         });
       });
     },
+    GET_HIGHSCORES(state){
+      return new Promise((resolve) => {
+        socket.emit("getHighscores", (resp: string) => {
+          const socketResponse = JSON.parse(resp) as SocketResponse;
+          if(socketResponse.success){
+            const highscore = JSON.parse(socketResponse.msg) as Highscore[];
+            resolve(highscore);
+          }
+        });
+      });
+    },
     ROOM_CREATE(state, user: User){
       return new Promise((resolve) => {
         socket.emit("createroom", JSON.stringify(user), (resp: string) => {
           const socketResponse = JSON.parse(resp) as SocketResponse;
           if(socketResponse.success){
-            const size = JSON.parse(socketResponse.msg);
-            user.room.height = size.height;
-            user.room.width = size.width;
-            user.room.totalMines = size.totalMines;
+            const room = JSON.parse(socketResponse.msg);
+            user.room.height = room.height;
+            user.room.width = room.width;
+            user.room.timer = room.timer;
+            user.room.flags = room.flags;
             this.commit("SET_CURRENT_USER", user);
           }
           resolve(socketResponse);
@@ -54,9 +67,11 @@ const storeOptions: StoreOptions<SocketState> = {
         socket.emit("joinroom", JSON.stringify(user), (resp: string) => {
           const socketResponse = JSON.parse(resp) as SocketResponse;
           if(socketResponse.success){
-            const size = JSON.parse(socketResponse.msg);
-            user.room.height = size.height;
-            user.room.width = size.width;
+            const room = JSON.parse(socketResponse.msg);
+            user.room.height = room.height;
+            user.room.width = room.width;
+            user.room.timer = room.timer;
+            user.room.flags = room.flags;
             this.commit("SET_CURRENT_USER", user);
           }
           resolve(socketResponse);
@@ -162,6 +177,9 @@ const storeOptions: StoreOptions<SocketState> = {
   getters: {
     GET_CURRENT_USER(state){
       return state.currentUser;
+    },
+    IS_SOCKET_CONNECTED(state){
+      return socket && socket.connected;
     }
   }
 }

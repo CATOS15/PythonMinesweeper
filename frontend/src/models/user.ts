@@ -11,7 +11,8 @@ export class Room{
   difficulty: Difficulty = Difficulty.EASY;
   width!: number;
   height!: number;
-  totalMines!: number;
+  flags!: number;
+  timer!: number;
 }
 
 export class UserCursor{

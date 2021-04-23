@@ -1,5 +1,6 @@
 #coding=utf-8
 
+from database import Database
 from GameBoard import GameBoard
 from flask import Flask, request
 from flask_socketio import SocketIO, close_room, join_room, leave_room
@@ -36,6 +37,8 @@ rooms: {
             "mines": 3,
             "fieldsLeft", 1,
             "state": 0,
+            "startTimestamp": 1619174757
+            "flags": 0,
             "numberOfPlayers": 2,
             "namesOfPlayers": "kaj, ole"
         }
@@ -168,7 +171,7 @@ def joinroom(jsondata):
     userJoinRoom(gameboard, data_user["room"]["roomname"], data_user["name"])
     rooms[data_user["room"]["roomname"]]["users"][request.sid] = data_user["name"]
 
-    response = {'width':gameboard.width,'height':gameboard.height}
+    response = {'width':gameboard.width,'height':gameboard.height, 'totalMines': gameboard.mines, 'flags': gameboard.flags, 'timer': gameboard.getCurrentTimeInSeconds()}
 
     return HTTPResponse(json.dumps(response),True).toJSON()
 
@@ -197,7 +200,7 @@ def createroom(jsondata):
 
     rooms[data_user["room"]["roomname"]]["gameboard"] = gameboard
 
-    response = {'width':gameboard.width,'height':gameboard.height, 'totalMines': gameboard.mines}
+    response = {'width':gameboard.width,'height':gameboard.height, 'totalMines': gameboard.mines, 'flags': gameboard.flags, 'timer': gameboard.getCurrentTimeInSeconds()}
     return HTTPResponse(json.dumps(response),True).toJSON()
 
 @socketio.on("leaveroom")
@@ -207,6 +210,23 @@ def leaveroom():
 @socketio.on("disconnect")
 def ondisconnect():
     removefromroom(request.sid)
+
+@socketio.on("getHighscores")
+def getHighscores():
+    database = Database()
+    database_highscores = database.get_highscores()
+    highscoreList = []
+    for highscore in database_highscores:
+        highscoreList.append({
+            'highscoreId':highscore[0],
+            'width':highscore[1], 
+            'height':highscore[2], 
+            'timer':highscore[3], 
+            'numberOfPlayers':highscore[4],  
+            'usernames':highscore[5], 
+            'difficulty': getDifficulty(highscore[1], highscore[2])
+            })
+    return HTTPResponse(json.dumps(highscoreList),True).toJSON()
 
 def removefromroom(sid):
     for roomname in rooms:
@@ -254,6 +274,16 @@ def getNewGameboard(difficulty):
         width = 20
         height = 24
     return GameBoard(width,height,mines)
+
+def getDifficulty(width, height):
+    if width == 8 and height == 10:
+        return 1
+    elif width == 14 and height == 18:
+        return 2
+    elif width == 20 and height == 24:
+        return 3
+    else:
+        return 0
 
 def userJoinRoom(gameboard, roomname, username):
     gameboard.numberOfPlayers += 1

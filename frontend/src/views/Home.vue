@@ -32,6 +32,8 @@
           <button @click="socketjoin()" :disabled="connectSocketLoading" style="flex-grow:3;">Tilslut</button>
       </div>
 
+      <button @click="routerNavigate('highscores')" :disabled="connectSocketLoading" style="flex-grow:3;">Highscores</button>
+
       <div class="response">
         {{msg}}
       </div>
@@ -42,6 +44,7 @@
 <script lang="ts">
 import { Component, Vue} from 'vue-property-decorator';
 import User from '@/models/user';
+import Highscore from '@/models/highscore';
 import router from '@/router';
 import { Action } from 'vuex-class'
 import SocketResponse from '@/models/socketResponse';
@@ -94,6 +97,10 @@ export default class Home extends Vue {
 
   setDifficulty(difficulty: Difficulty){
     this.difficulty = difficulty;
+  }
+
+  routerNavigate(path: string){
+    router.push(path);
   }
 
   navigate(toState: HomeStateEnum){
@@ -164,7 +171,6 @@ export default class Home extends Vue {
 </script>
 
 <style scoped>
-
 
 .content{
   height: 100%;

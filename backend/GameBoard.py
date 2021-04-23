@@ -1,7 +1,9 @@
 #coding=utf-8
 
+from database import Database
 from enum import Enum
 from random import randrange,uniform,choice
+from datetime import datetime
 
 class FieldValue(Enum):
     BLOCK = 10
@@ -33,6 +35,9 @@ class GameBoard:
     hidden = []
     newGame = True
     state = GameState.READY
+    startTimestamp = None
+    timer = 0
+    flags = 0
     numberOfPlayers = 0
     namesOfPlayers = ""
 
@@ -43,6 +48,7 @@ class GameBoard:
         self.width = width
         self.height = height
         self.mines = mines
+        self.flags = mines
         self.fieldsLeft = width * height - mines
 
         self.shown = [[0 for x in range(self.height)] for y in range(self.width)]
@@ -75,7 +81,7 @@ class GameBoard:
 
     def rightleftClick(self,x,y):
         if self.state == GameState.READY:
-            self.state = GameState.ACTIVE
+            self.setActive()
 
         if x < 0 or y < 0 or x >= self.width or y >= self.height or self.state != GameState.ACTIVE or self.shown[x][y].value < 1 or self.shown[x][y].value > 8:
             return [{'x':x,'y':y,'field':self.shown[x][y].value}]
@@ -96,21 +102,23 @@ class GameBoard:
 
     def rightClick(self,x,y):
         if self.state == GameState.READY:
-            self.state = GameState.ACTIVE
+            self.setActive()
 
         if x < 0 or y < 0 or x >= self.width or y >= self.height or self.state != GameState.ACTIVE:
             return [{'x':x,'y':y,'field':self.shown[x][y].value}]
 
         if self.shown[x][y] == FieldValue.FLAG:
             self.shown[x][y] = FieldValue.BLOCK
+            self.flags += 1
         elif self.shown[x][y] == FieldValue.BLOCK:
             self.shown[x][y] = FieldValue.FLAG
+            self.flags -= 1
 
         return [{'x':x,'y':y,'field':self.shown[x][y].value}]
 
     def leftClick(self,fields,x,y):
         if self.state == GameState.READY:
-            self.state = GameState.ACTIVE
+            self.setActive()
             
         if (x < 0 or y < 0 or x >= self.width or y >= self.height 
             or self.hidden[x][y] == self.shown[x][y]
@@ -127,7 +135,7 @@ class GameBoard:
         if self.hidden[x][y] == FieldValue.MINE:
             #Tabt
             fields = self.revealAllMines(fields) 
-            self.state = GameState.LOST
+            self.setLost()
             return fields
 
         if self.hidden[x][y] == FieldValue.ZERO:
@@ -143,7 +151,7 @@ class GameBoard:
         self.fieldsLeft -= 1
         if(self.fieldsLeft == 0):
             #Vundet
-            self.state = GameState.WON
+            self.setWon()
             
         return fields
 
@@ -189,3 +197,25 @@ class GameBoard:
 
         if self.hidden[x][y] != FieldValue.MINE:
             self.hidden[x][y] = FieldValue(self.hidden[x][y].value+1) 
+
+    def getCurrentTimeInSeconds(self):
+        if self.startTimestamp is None:
+            return 0
+        if self.state == GameState.WON or self.state == GameState.LOST:
+            return self.timer
+        timestampNow = datetime.timestamp(datetime.now())
+        self.timer = timestampNow - self.startTimestamp
+        return self.timer
+
+    def setActive(self):
+        self.state = GameState.ACTIVE
+        self.startTimestamp = datetime.timestamp(datetime.now())
+
+    def setWon(self):
+        database = Database()
+        database.insert_highscore(self.width, self.height, self.getCurrentTimeInSeconds(), self.numberOfPlayers, self.namesOfPlayers)
+        database.disconnect()
+        self.state = GameState.WON
+
+    def setLost(self):
+        self.state = GameState.LOST
