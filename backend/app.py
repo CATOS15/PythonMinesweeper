@@ -35,7 +35,9 @@ rooms: {
             "height": 4,
             "mines": 3,
             "fieldsLeft", 1,
-            "state": 0
+            "state": 0,
+            "numberOfPlayers": 2,
+            "namesOfPlayers": "kaj, ole"
         }
 	},
     "room2": {osv.....}
@@ -158,10 +160,14 @@ def joinroom(jsondata):
         if data_user["name"] == name:
             return HTTPResponse("En bruger med det navn findes allerede!",False).toJSON()
 
-    rooms[data_user["room"]["roomname"]]["users"][request.sid] = data_user["name"]
-    join_room(data_user["room"]["roomname"])
 
     gameboard = rooms[data_user["room"]["roomname"]]["gameboard"]
+    if(gameboard.numberOfPlayers > 7):
+        return HTTPResponse('Der har allerede været tilsluttet 8 eller flere spillere',False).toJSON()
+
+    userJoinRoom(gameboard, data_user["room"]["roomname"], data_user["name"])
+    rooms[data_user["room"]["roomname"]]["users"][request.sid] = data_user["name"]
+
     response = {'width':gameboard.width,'height':gameboard.height}
 
     return HTTPResponse(json.dumps(response),True).toJSON()
@@ -182,10 +188,13 @@ def createroom(jsondata):
         "users": {},
         "gameboard": None,
     }
-    rooms[data_user["room"]["roomname"]]["users"][request.sid] = data_user["name"]
-    join_room(data_user["room"]["roomname"])
-
     gameboard = getNewGameboard(data_user["room"]["difficulty"])
+    if(gameboard.numberOfPlayers > 7):
+        return HTTPResponse('Der har allerede været tilsluttet 8 eller flere spillere',False).toJSON()
+
+    userJoinRoom(gameboard, data_user["room"]["roomname"], data_user["name"])
+    rooms[data_user["room"]["roomname"]]["users"][request.sid] = data_user["name"]
+
     rooms[data_user["room"]["roomname"]]["gameboard"] = gameboard
 
     response = {'width':gameboard.width,'height':gameboard.height, 'totalMines': gameboard.mines}
@@ -245,6 +254,14 @@ def getNewGameboard(difficulty):
         width = 20
         height = 24
     return GameBoard(width,height,mines)
+
+def userJoinRoom(gameboard, roomname, username):
+    gameboard.numberOfPlayers += 1
+    if gameboard.numberOfPlayers == 1:
+        gameboard.namesOfPlayers += "" + username
+    else:
+        gameboard.namesOfPlayers += ", " + username
+    join_room(roomname)
 
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5005, debug=True)

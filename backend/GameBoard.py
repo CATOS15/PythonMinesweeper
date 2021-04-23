@@ -33,6 +33,8 @@ class GameBoard:
     hidden = []
     newGame = True
     state = GameState.READY
+    numberOfPlayers = 0
+    namesOfPlayers = ""
 
     def __init__(self,width,height,mines):
         if(mines > width * height - 9):

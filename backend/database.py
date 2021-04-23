@@ -9,7 +9,7 @@ class Database:
             database="minesweeper"
         )
         ## Global cursor
-        cur = self.con.cursor()
+        self.cur = self.con.cursor()
         print("Connection established")
 
     def get_highscores(self):
@@ -25,8 +25,3 @@ class Database:
         self.cur.execute(sql, val)
 
         self.con.commit()
-
-
-
-
-
