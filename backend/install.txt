@@ -1,3 +1,4 @@
 py -m pip install flask
 py -m pip install flask-socketio
 py -m pip install eventlet
+py -m pip install mysql-connector-python
