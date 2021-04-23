@@ -148,6 +148,18 @@ def getshownfields(jsondata):
     socketio.emit("emitGamestate", gameboard.state.value, room=data_user["room"]["roomname"])
     return HTTPResponse(json.dumps(fields),True).toJSON()
 
+@socketio.on("gettime")
+def gettime(jsondata):
+    data_user = json.loads(jsondata)
+    users = getUsersInRoom(data_user["room"]["roomname"])
+    if(not request.sid in users):
+        print("Brugeren (" + str(request.sid) + ") er ikke i rummet " + data_user["room"]["roomname"])
+        return
+    
+    gameboard = rooms[data_user["room"]["roomname"]]["gameboard"]
+
+    return HTTPResponse(gameboard.getCurrentTimeInSeconds(),True).toJSON()
+
 @socketio.on("joinroom")
 def joinroom(jsondata):
     data_user = json.loads(jsondata)
@@ -171,7 +183,7 @@ def joinroom(jsondata):
     userJoinRoom(gameboard, data_user["room"]["roomname"], data_user["name"])
     rooms[data_user["room"]["roomname"]]["users"][request.sid] = data_user["name"]
 
-    response = {'width':gameboard.width,'height':gameboard.height, 'totalMines': gameboard.mines, 'flags': gameboard.flags, 'timer': gameboard.getCurrentTimeInSeconds()}
+    response = {'width':gameboard.width,'height':gameboard.height, 'totalMines': gameboard.mines, 'flags': gameboard.flags, 'timer': gameboard.getCurrentTimeInSeconds(), 'gamestate': gameboard.state.value}
 
     return HTTPResponse(json.dumps(response),True).toJSON()
 
@@ -200,7 +212,7 @@ def createroom(jsondata):
 
     rooms[data_user["room"]["roomname"]]["gameboard"] = gameboard
 
-    response = {'width':gameboard.width,'height':gameboard.height, 'totalMines': gameboard.mines, 'flags': gameboard.flags, 'timer': gameboard.getCurrentTimeInSeconds()}
+    response = {'width':gameboard.width,'height':gameboard.height, 'totalMines': gameboard.mines, 'flags': gameboard.flags, 'timer': gameboard.getCurrentTimeInSeconds(), 'gamestate': gameboard.state.value}
     return HTTPResponse(json.dumps(response),True).toJSON()
 
 @socketio.on("leaveroom")

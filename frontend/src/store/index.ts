@@ -56,6 +56,7 @@ const storeOptions: StoreOptions<SocketState> = {
             user.room.width = room.width;
             user.room.timer = room.timer;
             user.room.flags = room.flags;
+            user.room.gamestate = room.gamestate;
             this.commit("SET_CURRENT_USER", user);
           }
           resolve(socketResponse);
@@ -72,6 +73,7 @@ const storeOptions: StoreOptions<SocketState> = {
             user.room.width = room.width;
             user.room.timer = room.timer;
             user.room.flags = room.flags;
+            user.room.gamestate = room.gamestate;
             this.commit("SET_CURRENT_USER", user);
           }
           resolve(socketResponse);
@@ -113,6 +115,17 @@ const storeOptions: StoreOptions<SocketState> = {
     ROOM_LISTEN_GAMESTATE(state, callback: (gamestate: GameState) => void){
       socket.on("emitGamestate", (gamestate: GameState) => {
         callback(gamestate);
+      });
+    },
+    ROOM_GET_TIME(state, user: User){
+      return new Promise((resolve) => {
+        socket.emit("gettime", JSON.stringify(user), (resp: string) => {
+          const socketResponse = JSON.parse(resp) as SocketResponse;
+          if(socketResponse.success){
+            const timer = JSON.parse(socketResponse.msg) as number;
+            resolve(timer);
+          }
+        });
       });
     },
     FIELD_RIGHTLEFTCLICK(state, coordinate: Coordinate){

@@ -4,6 +4,7 @@ from database import Database
 from enum import Enum
 from random import randrange,uniform,choice
 from datetime import datetime
+import math
 
 class FieldValue(Enum):
     BLOCK = 10
@@ -205,6 +206,7 @@ class GameBoard:
             return self.timer
         timestampNow = datetime.timestamp(datetime.now())
         self.timer = timestampNow - self.startTimestamp
+        self.timer = round(self.timer)
         return self.timer
 
     def setActive(self):
@@ -212,10 +214,12 @@ class GameBoard:
         self.startTimestamp = datetime.timestamp(datetime.now())
 
     def setWon(self):
+        self.getCurrentTimeInSeconds()
         database = Database()
-        database.insert_highscore(self.width, self.height, self.getCurrentTimeInSeconds(), self.numberOfPlayers, self.namesOfPlayers)
+        database.insert_highscore(self.width, self.height, self.timer, self.numberOfPlayers, self.namesOfPlayers)
         database.disconnect()
         self.state = GameState.WON
 
     def setLost(self):
+        self.getCurrentTimeInSeconds()
         self.state = GameState.LOST

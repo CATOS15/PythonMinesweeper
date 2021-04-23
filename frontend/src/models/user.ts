@@ -1,4 +1,4 @@
-import { Difficulty } from "./enums";
+import { Difficulty, GameState } from "./enums";
 
 export default class User {
   name = "";
@@ -9,6 +9,7 @@ export default class User {
 export class Room{
   roomname = "";
   difficulty: Difficulty = Difficulty.EASY;
+  gamestate!: GameState;
   width!: number;
   height!: number;
   flags!: number;
