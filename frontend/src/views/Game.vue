@@ -10,12 +10,16 @@
       </div>
       <div class="gamechatcontainer">
         <div class="game">
-          <div class="gameinfo h2">
+          <div class="gameinfo bigchild h2">
             <div>
               <div class="flag"></div>{{flags}}
             </div>
-            <div>
-              {{timer}}<div class="stopwatch"></div>
+            <div class="restart_container">
+              <div class="restart"></div>
+            </div> 
+            <div class="stopwatch_container">
+              <div>{{timer}}</div>
+              <div class="stopwatch"></div>
             </div>
           </div>
           <div class="gamegrid" ref="gamegridHTML">
@@ -256,14 +260,6 @@ export default class Game extends Vue {
   justify-content: center;
 }
 
-.logoroomcontainer{
-  display:flex;
-  height:auto;
-  width:1060px; 
-  height:auto;
-  text-align: left;
-}
-
 .logo{
   width:auto;
   height:90px
@@ -277,10 +273,30 @@ export default class Game extends Vue {
   align-items: center;
 }
 
+.bigchild > div{
+  width:200px;
+}
+
+.stopwatch_container{
+  justify-content: flex-end;
+}
+
+.restart_container{
+  justify-content: center;
+}
+
 .gameinfo > div{
   padding:0 8px;
   display: flex;
   align-items: center;
+}
+
+.gameinfo > div .restart{
+  background-image: url(../../src/assets/images/Flat_restart_icon.svg);
+  float:left;
+  width:24px;
+  height:24px;
+  margin-right:5px;
 }
 
 .gameinfo > div .flag{
