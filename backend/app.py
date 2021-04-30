@@ -187,6 +187,26 @@ def joinroom(jsondata):
 
     return HTTPResponse(json.dumps(response),True).toJSON()
 
+@socketio.on("resetgame")
+def resetgame(jsondata):
+    data_user = json.loads(jsondata)
+    users = getUsersInRoom(data_user["room"]["roomname"]) 
+    if(not request.sid in users):
+        print("Brugeren (" + str(request.sid) + ") er ikke i rummet " + data_user["room"]["roomname"])
+        return
+    
+    gameboard = rooms[data_user["room"]["roomname"]]["gameboard"]
+    numberOfPlayers = gameboard.numberOfPlayers
+    namesOfPlayers = gameboard.namesOfPlayers
+
+    gameboard = GameBoard(gameboard.width, gameboard.height, gameboard.mines)
+    gameboard.numberOfPlayers = numberOfPlayers
+    gameboard.namesOfPlayers = namesOfPlayers
+    rooms[data_user["room"]["roomname"]]["gameboard"] = gameboard
+
+    response = {'difficulty':getDifficulty(gameboard.width, gameboard.height), 'roomname': data_user["room"]["roomname"],'width':gameboard.width,'height': gameboard.height, 'flags': gameboard.flags, 'timer': gameboard.getCurrentTimeInSeconds(), 'gamestate': gameboard.state.value}
+    socketio.emit("emitResetgame", json.dumps(response), room=data_user["room"]["roomname"])
+    return HTTPResponse(json.dumps(response),True).toJSON()
 
 @socketio.on("createroom")
 def createroom(jsondata):

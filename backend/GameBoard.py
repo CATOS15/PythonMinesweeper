@@ -223,3 +223,5 @@ class GameBoard:
     def setLost(self):
         self.getCurrentTimeInSeconds()
         self.state = GameState.LOST
+
+

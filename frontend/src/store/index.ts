@@ -117,6 +117,25 @@ const storeOptions: StoreOptions<SocketState> = {
         callback(gamestate);
       });
     },
+    ROOM_LISTEN_RESETGAME(state, callback: (room: Room) => void){
+      socket.on("emitResetgame", (resp: string) => {
+        const room = JSON.parse(resp) as Room;
+        this.commit("SET_CURRENT_USER_ROOM", room);
+        callback(room);
+      });
+    },
+    ROOM_RESET_GAME(state,user: User){
+      return new Promise((resolve) => {
+        socket.emit("resetgame", JSON.stringify(user), (resp: string) => {
+          const socketResponse = JSON.parse(resp) as SocketResponse;
+          if(socketResponse.success){
+            const room = JSON.parse(socketResponse.msg) as Room;
+            resolve(room);
+          }
+        });
+      });
+    },
+    
     ROOM_GET_TIME(state, user: User){
       return new Promise((resolve) => {
         socket.emit("gettime", JSON.stringify(user), (resp: string) => {
@@ -185,6 +204,9 @@ const storeOptions: StoreOptions<SocketState> = {
   mutations: {
     SET_CURRENT_USER(state, user: User){
       state.currentUser = user;
+    },
+    SET_CURRENT_USER_ROOM(state, room: Room){
+      state.currentUser.room = room;
     }
   },
   getters: {

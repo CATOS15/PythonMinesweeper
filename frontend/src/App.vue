@@ -42,6 +42,11 @@ html, body, .app{
   background-position: center center;
 }
 
+.logo{
+  width:auto;
+  height:90px
+}
+
 input{
   border-radius: 30px;
   padding: 10px 18px;
