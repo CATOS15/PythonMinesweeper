@@ -15,7 +15,7 @@
               <div class="flag"></div>{{flags}}
             </div>
             <div class="restart_container">
-              <div class="restart"></div>
+              <div class="restart" @click="resetGame()"></div>
             </div> 
             <div class="stopwatch_container">
               <div>{{timer}}</div>
@@ -48,7 +48,7 @@ import { Getter, Action } from 'vuex-class'
 import Chat from '@/components/Chat.vue'
 import GameBlock from '@/models/gameblock';
 import router from '@/router';
-import User from '@/models/user';
+import User, { Room } from '@/models/user';
 import Coordinate from '@/models/coordinate';
 import { Field, GameState } from '@/models/enums';
 import GameCursor from '@/components/GameCursor.vue';
@@ -73,11 +73,17 @@ export default class Game extends Vue {
   @Action("ROOM_GET_TIME")
   room_getTime!: (user: User) => Promise<number>;
 
+  @Action("ROOM_RESET_GAME")
+  room_resetGame!: (user: User) => Promise<null>;
+
   @Action("ROOM_LISTEN_GAMESTATE")
   room_listengamestate!: (callback: (gamestate: GameState) => void) => Promise<null>;
 
   @Action("ROOM_LISTEN_USERSCONNECTED")
   room_listenUserConnected!: (callback: (usernames: string[]) => void) => Promise<null>;
+
+  @Action("ROOM_LISTEN_RESETGAME")
+  room_listenResetGame!: (callback: (room: Room) => void) => Promise<null>;
 
   @Action("FIELD_LEFTCLICK")
   field_leftclick!: (coordinate: Coordinate) => Promise<null>;
@@ -104,9 +110,8 @@ export default class Game extends Vue {
   gamegridHTML!: HTMLElement;
   
   flags: number = 0;
-  interval!: number;
+  interval: number | null = null;
   timer: number = 0;
-
 
   mounted(){
     if(!(this.currentUser && this.currentUser.room && this.currentUser.name && this.currentUser.room.roomname && this.currentUser.room.difficulty && this.currentUser.room.width && this.currentUser.room.height)){
@@ -170,8 +175,26 @@ export default class Game extends Vue {
       this.usernames = usernames;
     });
 
-    this.gamegridHTML = this.$refs.gamegridHTML as HTMLElement;
+    this.room_listenResetGame((room: Room) => {
+      this.stopTimer();
 
+      this.grid = [];
+      this.mouseRightDown = false;
+      this.mouseLeftDown = false;
+      this.interval = null;
+      
+      for(let x=0;x<this.currentUser.room.width;x++){
+        this.grid[x] = [];
+        for(let y=0;y<this.currentUser.room.height;y++){
+            this.grid[x][y] = new GameBlock();
+        }
+      }
+      this.flags = this.currentUser.room.flags;
+      this.timer = this.currentUser.room.timer;
+      this.gamestate = this.currentUser.room.gamestate;
+    });
+
+    this.gamegridHTML = this.$refs.gamegridHTML as HTMLElement;
     this.contentReady = true;
   }
 
@@ -247,6 +270,10 @@ export default class Game extends Vue {
     }
     return fieldClass;
   }
+
+  resetGame(){
+    this.room_resetGame(this.currentUser);
+  }
 }
 </script>
 
@@ -260,10 +287,6 @@ export default class Game extends Vue {
   justify-content: center;
 }
 
-.logo{
-  width:auto;
-  height:90px
-}
 
 .gameinfo{
   display: flex;

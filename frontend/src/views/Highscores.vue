@@ -1,5 +1,8 @@
 <template>
     <div class="content">
+        <div>
+          <img class="logo" style="cursor:pointer;" src="../../src/assets/bomb_title.png" @click="highscoreLeave" />
+        </div>
         <div class="highscore_container">
             <table class="styled-table">
                 <thead>
@@ -28,6 +31,7 @@ import { Component, Vue} from 'vue-property-decorator';
 import { Getter, Action } from 'vuex-class'
 import Highscore from '@/models/highscore';
 import SocketResponse from '@/models/socketResponse';
+import router from '@/router';
 
 @Component({
   components: {
@@ -69,7 +73,12 @@ export default class Highscores extends Vue{
             });
         });
     }
+
+    highscoreLeave(){
+        router.replace("/");
+    }
 }
+
 </script>
 
 <style scoped>
@@ -85,6 +94,7 @@ export default class Highscores extends Vue{
 .highscore_container{
     width:auto;
 }
+
 
 .styled-table {
     min-width: 800px;
@@ -107,8 +117,9 @@ export default class Highscores extends Vue{
     display:block;
     overflow-y:scroll;
     overflow-x:hidden;
-    height:200px;
+    max-height:600px;
     border-radius:0px 0px 0px 10px;
+    background-color:white;
 }
 
 .styled-table td{
