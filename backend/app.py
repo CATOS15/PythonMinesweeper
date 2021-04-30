@@ -94,7 +94,8 @@ def leftClick(jsondata):
     fields = gameboard.leftClick([], data_coordinate["x"], data_coordinate["y"])
 
     socketio.emit("emitClick", json.dumps(fields), room=data_coordinate["roomname"])
-    socketio.emit("emitGamestate", gameboard.state.value, room=data_coordinate["roomname"])
+    gamestateReponse = {'gamestate': gameboard.state.value, 'name': rooms[data_coordinate["roomname"]]["users"][request.sid]}
+    socketio.emit("emitGamestate", json.dumps(gamestateReponse), room=data_coordinate["roomname"])
 
 @socketio.on("rightClick")
 def rightClick(jsondata):
@@ -108,7 +109,9 @@ def rightClick(jsondata):
     fields = gameboard.rightClick(data_coordinate["x"], data_coordinate["y"])
 
     socketio.emit("emitClick", json.dumps(fields), room=data_coordinate["roomname"])
-    socketio.emit("emitGamestate", gameboard.state.value, room=data_coordinate["roomname"])
+
+    gamestateReponse = {'gamestate': gameboard.state.value, 'name': rooms[data_coordinate["roomname"]]["users"][request.sid]}
+    socketio.emit("emitGamestate", json.dumps(gamestateReponse), room=data_coordinate["roomname"])
     
 @socketio.on("rightleftClick")
 def rightleftClick(jsondata):
@@ -122,7 +125,9 @@ def rightleftClick(jsondata):
     fields = gameboard.rightleftClick(data_coordinate["x"], data_coordinate["y"])
 
     socketio.emit("emitClick", json.dumps(fields), room=data_coordinate["roomname"])
-    socketio.emit("emitGamestate", gameboard.state.value, room=data_coordinate["roomname"])
+
+    gamestateReponse = {'gamestate': gameboard.state.value, 'name': rooms[data_coordinate["roomname"]]["users"][request.sid]}
+    socketio.emit("emitGamestate", json.dumps(gamestateReponse), room=data_coordinate["roomname"])
 
 @socketio.on("refreshUsersConnected")
 def refreshUsersConnected(jsondata):
@@ -145,7 +150,8 @@ def getshownfields(jsondata):
     gameboard = rooms[data_user["room"]["roomname"]]["gameboard"]
     fields = gameboard.getShownFields()
 
-    socketio.emit("emitGamestate", gameboard.state.value, room=data_user["room"]["roomname"])
+    gamestateReponse = {'gamestate': gameboard.state.value, 'name': rooms[data_user["room"]["roomname"]]["users"][request.sid]}
+    socketio.emit("emitGamestate", json.dumps(gamestateReponse), room=data_user["room"]["roomname"])
     return HTTPResponse(json.dumps(fields),True).toJSON()
 
 @socketio.on("gettime")

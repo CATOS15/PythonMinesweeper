@@ -22,3 +22,8 @@ export class UserCursor{
   left: number = 0;
   top: number = 0;
 }
+
+export class GameStateUser{
+  name = "";
+  gamestate!: GameState;
+}

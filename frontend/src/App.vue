@@ -63,8 +63,9 @@ button{
   padding: 10px 14px;
   margin: 5px 0 !important;
   color: white;
-  background: #0f80a4;
+  background: #0f80a4c7;
   border: none;
+  box-shadow: 5px 5px 4px 0px #10202b;
 }
 button:not(:last-child){
   margin-right:10px !important;
@@ -72,6 +73,12 @@ button:not(:last-child){
 button:disabled{
   opacity: 0.65;
   color: #d6d6d6;
+}
+button:hover:not(.backgroundRed):not(.backgroundGreen){
+  background: #0f80a4;
+}
+button.backgroundRed:hover{
+  background: #f87575;
 }
 input:focus, button:focus{
   outline: none;

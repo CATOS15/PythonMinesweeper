@@ -1,10 +1,10 @@
 <template>
   <div class="content" @contextmenu.prevent>
-      <div class="gameinfo" style="width:1060px;">
+      <div class="gameheader" style="width:1060px;">
         <div>
           <img class="logo" style="cursor:pointer;" src="../../src/assets/bomb_title.png" @click="socketleave" />
         </div>
-        <div class="h2">
+        <div class="h2" style="margin-top:28px;">
           Rum: {{currentUser.room.roomname}}
         </div>
       </div>
@@ -36,7 +36,7 @@
           </div>
         </div>
         <div class="chat" v-if="contentReady">
-          <Chat :usernames="usernames" :gamestate="gamestate" />
+          <Chat :usernames="usernames" :gamestateUser="gamestateUser" />
         </div>
       </div>
   </div>
@@ -48,7 +48,7 @@ import { Getter, Action } from 'vuex-class'
 import Chat from '@/components/Chat.vue'
 import GameBlock from '@/models/gameblock';
 import router from '@/router';
-import User, { Room } from '@/models/user';
+import User, { Room, GameStateUser } from '@/models/user';
 import Coordinate from '@/models/coordinate';
 import { Field, GameState } from '@/models/enums';
 import GameCursor from '@/components/GameCursor.vue';
@@ -77,7 +77,7 @@ export default class Game extends Vue {
   room_resetGame!: (user: User) => Promise<null>;
 
   @Action("ROOM_LISTEN_GAMESTATE")
-  room_listengamestate!: (callback: (gamestate: GameState) => void) => Promise<null>;
+  room_listengamestate!: (callback: (gamestateUser: GameStateUser) => void) => Promise<null>;
 
   @Action("ROOM_LISTEN_USERSCONNECTED")
   room_listenUserConnected!: (callback: (usernames: string[]) => void) => Promise<null>;
@@ -101,7 +101,7 @@ export default class Game extends Vue {
   GameState = GameState;
   contentReady: boolean = false;
   grid: GameBlock[][] = [];  
-  gamestate: GameState = GameState.ACTIVE;
+  gamestateUser: GameStateUser = new GameStateUser();
   usernames: String[] = [];
   
   mouseRightDown = false;
@@ -126,8 +126,8 @@ export default class Game extends Vue {
     }
     this.flags = this.currentUser.room.flags;
     this.timer = this.currentUser.room.timer;
-    this.gamestate = this.currentUser.room.gamestate;
-    if(this.gamestate === GameState.ACTIVE){
+    this.gamestateUser.gamestate = this.currentUser.room.gamestate;
+    if(this.gamestateUser.gamestate === GameState.ACTIVE){
       this.startTimer();
     }
     
@@ -140,13 +140,15 @@ export default class Game extends Vue {
       }
     });
 
-    this.room_listengamestate((gamestate: GameState) => {
-      if(this.gamestate === GameState.READY && gamestate === GameState.ACTIVE){
+    this.room_listengamestate((gamestateUser: GameStateUser) => {
+      if(gamestateUser.gamestate === this.gamestateUser.gamestate) return;
+      
+      if(this.gamestateUser.gamestate === GameState.READY && gamestateUser.gamestate === GameState.ACTIVE){
         this.startTimer();
       }
 
-      this.gamestate = gamestate;
-      if(this.gamestate === GameState.WON || this.gamestate === GameState.LOST){
+      this.gamestateUser = gamestateUser;
+      if(this.gamestateUser.gamestate === GameState.WON || this.gamestateUser.gamestate === GameState.LOST){
         this.stopTimer();
         this.room_getTime(this.currentUser).then((timer: number) => {
           this.timer = timer;
@@ -191,7 +193,7 @@ export default class Game extends Vue {
       }
       this.flags = this.currentUser.room.flags;
       this.timer = this.currentUser.room.timer;
-      this.gamestate = this.currentUser.room.gamestate;
+      this.gamestateUser.gamestate = this.currentUser.room.gamestate;
     });
 
     this.gamegridHTML = this.$refs.gamegridHTML as HTMLElement;
@@ -218,9 +220,9 @@ export default class Game extends Vue {
   }
 
   fieldMousedown(event: MouseEvent, x: number, y: number){
-    if(this.gamestate === GameState.READY){
+    if(this.gamestateUser.gamestate === GameState.READY){
       this.startTimer();
-      this.gamestate = GameState.ACTIVE;
+      this.gamestateUser.gamestate = GameState.ACTIVE;
     }
 
     const coordinate = new Coordinate();
@@ -288,12 +290,13 @@ export default class Game extends Vue {
 }
 
 
-.gameinfo{
+.gameheader{
   display: flex;
   height:auto;
   width:100%; 
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 35px;
 }
 
 .bigchild > div{
@@ -308,10 +311,18 @@ export default class Game extends Vue {
   justify-content: center;
 }
 
-.gameinfo > div{
+.gameinfo{
+  display: flex;
+  height:auto;
+  width:100%; 
+  justify-content: space-between;
+  align-items: center;
   padding:0 8px;
+}
+.gameinfo > div{
   display: flex;
   align-items: center;
+  padding:0 8px;
 }
 
 .gameinfo > div .restart{

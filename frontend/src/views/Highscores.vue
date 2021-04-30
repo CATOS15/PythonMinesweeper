@@ -1,6 +1,6 @@
 <template>
     <div class="content">
-        <div>
+        <div class="mb-4">
           <img class="logo" style="cursor:pointer;" src="../../src/assets/bomb_title.png" @click="highscoreLeave" />
         </div>
         <div class="highscore_container">

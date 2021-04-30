@@ -4,6 +4,9 @@
       <img src="../../src/assets/bomb_title.png" />
     </div>
     <div class="fieldset">
+
+      <div @click="routerNavigate('highscores')" :disabled="connectSocketLoading" class="mb-2 trophy"></div>
+
       <div>
         <input v-model="currentUser.name" type="text" placeholder="Navn" @keyup.enter="nagivateEnter()"/>
       </div>
@@ -20,7 +23,7 @@
 
 
       <div class="buttons mt-2" v-if="state === HomeStateEnum.DEFAULT">
-          <button @click="navigate(HomeStateEnum.CREATE)" :disabled="connectSocketLoading" class="backgroundDarkBlue" style="flex-grow:1">Opret</button>
+          <button @click="navigate(HomeStateEnum.CREATE)" :disabled="connectSocketLoading" style="flex-grow:1">Opret</button>
           <button @click="navigate(HomeStateEnum.JOIN)" :disabled="connectSocketLoading" style="flex-grow:3;">Tilslut</button>
       </div>
       <div class="buttons mt-4" v-if="state === HomeStateEnum.CREATE">
@@ -31,8 +34,6 @@
           <button @click="navigate(HomeStateEnum.DEFAULT)" :disabled="connectSocketLoading" class="backgroundRed" style="flex-grow:1">Tilbage</button>
           <button @click="socketjoin()" :disabled="connectSocketLoading" style="flex-grow:3;">Tilslut</button>
       </div>
-
-      <button @click="routerNavigate('highscores')" :disabled="connectSocketLoading" style="flex-grow:3;">Highscores</button>
 
       <div class="response">
         {{msg}}
@@ -191,6 +192,24 @@ export default class Home extends Vue {
 
 .content .response{
   height: 30px;
+}
+
+.content .fieldset .trophy{
+  background-image: url(../../src/assets/images/trophy.svg);
+  background-size: cover;
+  background-position: 5px 7px;
+  background-repeat: no-repeat;
+  background-size: 30px;
+  background-color: #fed8432e;
+  float:right;
+  width:40px;
+  height:40px;
+  cursor:pointer;
+  border-radius: 20px;
+  box-shadow: 2px 2px 1px 0px #dcbc402e;
+}
+.content .fieldset .trophy:hover{
+  background-color: #fed84369;
 }
 
 </style>

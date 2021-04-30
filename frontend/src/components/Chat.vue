@@ -27,7 +27,7 @@
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import { Getter, Action } from 'vuex-class';
-import User from '@/models/user';
+import User, { GameStateUser } from '@/models/user';
 import ChatMessage from '@/models/chatMessage';
 import SocketResponse from '@/models/socketResponse';
 import { GameState } from '@/models/enums';
@@ -47,7 +47,7 @@ export default class Chat extends Vue {
   chat_listenMessage!: (callback: (chatMessage: ChatMessage) => void) => Promise<null>;
 
   @Prop({required: true})
-  gamestate!: GameState;
+  gamestateUser!: GameStateUser;
   
   @Prop({required: true})
   usernames!: String[];
@@ -55,18 +55,18 @@ export default class Chat extends Vue {
   message: string = '';
   chatmessages: ChatMessage[] = [];
 
-  @Watch('gamestate')
+  @Watch('gamestateUser')
   gamestateChanged(){
-    if(this.gamestate === GameState.LOST){
+    if(this.gamestateUser.gamestate === GameState.LOST){
       const chatmessage = new ChatMessage();
       chatmessage.username = "SYSTEM";
-      chatmessage.message = "SPILLET ER TABT"
+      chatmessage.message = "SPILLET ER TABT - " + this.gamestateUser.name + " er synderen!";
       chatmessage.time = new Date();
       chatmessage.roomname = this.currentUser.room.roomname;
       chatmessage.system = true;
       this.chatmessages.push(chatmessage);
     }
-    else if(this.gamestate === GameState.WON){
+    else if(this.gamestateUser.gamestate === GameState.WON){
       const chatmessage = new ChatMessage();
       chatmessage.username = "SYSTEM";
       chatmessage.message = "SPILLET ER VUNDET"

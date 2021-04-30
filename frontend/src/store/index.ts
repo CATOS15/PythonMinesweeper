@@ -3,7 +3,7 @@ import Coordinate from '@/models/coordinate'
 import { GameState } from '@/models/enums'
 import Highscore from '@/models/highscore'
 import SocketResponse from '@/models/socketResponse'
-import User, { Room, UserCursor } from '@/models/user'
+import User, { GameStateUser, Room, UserCursor } from '@/models/user'
 import { io, Socket, SocketOptions } from 'socket.io-client'
 import Vue from 'vue'
 import Vuex, { StoreOptions } from 'vuex'
@@ -112,9 +112,10 @@ const storeOptions: StoreOptions<SocketState> = {
         callback(usernames);
       });
     },
-    ROOM_LISTEN_GAMESTATE(state, callback: (gamestate: GameState) => void){
-      socket.on("emitGamestate", (gamestate: GameState) => {
-        callback(gamestate);
+    ROOM_LISTEN_GAMESTATE(state, callback: (gamestateUser: GameStateUser) => void){
+      socket.on("emitGamestate", (resp: string) => {
+        const gamestateUser = JSON.parse(resp) as GameStateUser;
+        callback(gamestateUser);
       });
     },
     ROOM_LISTEN_RESETGAME(state, callback: (room: Room) => void){
