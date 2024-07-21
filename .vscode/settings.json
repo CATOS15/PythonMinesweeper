@@ -16,7 +16,7 @@
   "editor.formatOnSave": true,
   "vetur.format.defaultFormatter.html": "prettier",
   "editor.codeActionsOnSave": {
-    "source.fixAll.tslint": true
+    "source.fixAll.tslint": "explicit"
   },
   "vetur.format.defaultFormatterOptions": {
     "prettier": {
